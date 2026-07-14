@@ -2,9 +2,10 @@
 name: onboarding-harness
 description: >
   Use at the start of any nexus research workflow to verify MCP availability and
-  project manifest. Called by nexus during Phase 0. Standalone use: before any
-  multi-step agent workflow that depends on MemPalace or Seekstone MCP. Do NOT
-  use for simple single-command queries.
+  project manifest — even if the workflow was already run this session. Called
+  by nexus during Phase 0. Standalone use: before any multi-step agent workflow
+  that depends on MemPalace or Seekstone MCP. Do NOT use for simple single-command
+  queries.
 ---
 
 # onboarding-harness
@@ -46,3 +47,8 @@ If mempalace or seekstone is unavailable:
 - Record the gap
 - Continue with available sources
 - Note limitations in research brief
+
+## Gotchas
+
+- MCP failure does not block the workflow — continue with gaps
+- Manifest may be stale; cross-check with actual project structure

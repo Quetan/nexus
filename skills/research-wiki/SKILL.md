@@ -45,3 +45,8 @@ Returns wikilink-cited findings for the research task.
 - Conflicts found in wiki → pass to `research-synthesize` with both dates.
 - Respect query budget — don't exceed the allocated count.
 - If topic has no record, note it as a gap.
+
+## Gotchas
+
+- vault-query is vault-only by default — don't supplement with web/codegraph unless allowed
+- wiki/index.md may be incomplete after many ingests — also search directly

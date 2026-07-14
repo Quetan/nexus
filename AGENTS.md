@@ -47,12 +47,14 @@ Refactor `surgut-research` and `obsidian-task-note` into a modular atomic skill 
 ### Frontmatter Template (each SKILL.md)
 ```yaml
 ---
-name: kebab-case-name
-description: >
+name: kebab-case-name          # Must match parent directory
+description: >                 # "Use when..." triggers; embed Requires: inline
   Use when (trigger-1), (trigger-2), ... (trigger-N).
   Requires: skill-1, skill-2 (if any)
 ---
 ```
+
+Note: `Requires:` is embedded in the `description` field (not a standalone frontmatter key). This is consistent across all 12 skills. The optional `metadata` and `license` fields from agentskills.io spec are used only when needed.
 
 ### Rules per skill
 - Single-purpose: does ONE thing well
@@ -104,8 +106,21 @@ Before each commit:
 | Skill directory | `kebab-case` |
 | Skill name (frontmatter) | `kebab-case` |
 | Reference files | `kebab-case.md` |
-| Frontmatter fields | `name`, `description`, `requires-skill`, `metadata` |
+| Frontmatter fields | `name`, `description` |
 | trigger phrases in description | Use when (1) ..., (2) ... |
+| Requires-skill notation | Embedded in `description` as `Requires: skill-a, skill-b` |
+| Optional fields | `metadata`, `license`, `compatibility` (per agentskills.io spec) |
+
+## Schema Co-evolution
+
+AGENTS.md evolves with the wiki and the skills. After each significant ingest or after discovering a pattern that works (or doesn't), update this file:
+
+- Add new conventions discovered during implementation
+- Fix inconsistencies between declared rules and actual practice
+- Document workflows that worked well for future sessions
+- Remove assumptions that proved wrong
+
+The agent should treat AGENTS.md as a living document — not immutable law, but the current best understanding. When in doubt, ask the user.
 
 ## Source Materials
 

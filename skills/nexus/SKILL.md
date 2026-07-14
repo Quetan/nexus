@@ -2,11 +2,12 @@
 name: nexus
 description: >
   Use when starting a new task that needs institutional context before
-  implementation — any project with MemPalace + Obsidian LLM Wiki. Triggers on
-  "/nexus", "nexus research", "собери контекст", "исследуй перед реализацией",
-  or any task in a tracked project workspace. Also triggers on "/surgut-research",
-  "surgut research". Do NOT use when only vault operations (write/ingest/query/lint)
-  are needed without research flow. Requires: onboarding-harness, research-mempalace,
+  implementation — any project with MemPalace + Obsidian LLM Wiki, even if the
+  user doesn't name a specific project. Triggers on "/nexus", "nexus research",
+  "собери контекст", "исследуй перед реализацией", or any task in a tracked
+  project workspace. Also triggers on "/surgut-research", "surgut research".
+  Do NOT use when only vault operations (write/ingest/query/lint) are needed
+  without research flow. Requires: onboarding-harness, research-mempalace,
   research-wiki, research-synthesize, research-brief, research-plan, vault-query.
 ---
 
@@ -61,6 +62,11 @@ newer record wins (by date).
 | Repos | from project context |
 | Task type | migration, bugfix, feature, cross-service |
 
+### References
+
+Load when needed:
+- Read [references/subagent-prompts.md] **before dispatching Phase 2a sub-agents** — prompt templates for parallel research
+
 ### Phase 2a — Vault Research (parallel)
 
 Dispatch two sub-agents in parallel:
@@ -111,6 +117,12 @@ Skip for routine bugfixes with no new decisions.
 - [ ] No implementation code (unless user approved)
 - [ ] Brief is Russian; plan matches user language
 - [ ] Phase 7 noted — scheduled or skipped with reason
+
+## Gotchas
+
+- Runtime ports, credentials, docker: palace manifest only — not markdown
+- Wiki track is mandatory even if user says skip; record gap if vault empty
+- Older record does not win — newer date always wins
 
 ## Anti-patterns
 

@@ -49,3 +49,8 @@ Deduplicate overlapping facts, resolve conflicts by date, list remaining gaps.
 - Never silently pick a winner when dates are equal — always flag for user
 - Do not blend or interpolate conflicting facts
 - Preserve source traceability for every claim
+
+## Gotchas
+
+- Dates may be in different formats (DD.MM.YYYY vs YYYY-MM-DD) — normalize before comparing
+- Equal dates or missing dates → ask user, never silently pick

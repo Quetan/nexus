@@ -26,6 +26,11 @@ changes. Appends a summary entry to `wiki/log.md`.
 | Index drift | Pages not listed in wiki/index.md or project 00_Index.md |
 | Broken wikilinks | `[[links]]` that don't resolve to existing pages |
 
+## References
+
+Load when needed:
+- Read [references/lint-protocol.md] **when running health checks** — check definitions and report format
+
 ## Process
 
 1. Run each check sequentially
@@ -56,3 +61,9 @@ changes. Appends a summary entry to `wiki/log.md`.
 - Report only — never create, edit, or delete pages
 - Only append to wiki/log.md (no other writes)
 - If seekstone is down → report as unable to check
+
+## Gotchas
+
+- Report only — never create, edit, or delete pages
+- Only append to log.md (no other writes)
+- seekstone down → report as unable to check

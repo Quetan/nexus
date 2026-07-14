@@ -56,3 +56,9 @@ append to avoid duplicates.
 - Append only — never rewrite existing entries
 - Check for duplicates before appending to indexes
 - Full vault paths only (no `.md`, no `../`)
+
+## Gotchas
+
+- Read existing index content before append — avoid duplicates
+- Never rewrite existing entries — append only
+- Full vault paths only (no .md, no ../)

@@ -49,3 +49,9 @@ and prior work. Returns structured findings with drawer IDs and date stamps.
 - If a search returns nothing, record it as a gap (don't invent)
 - Always return drawer IDs for traceability
 - Never read code or grep files during this phase
+
+## Gotchas
+
+- Drawer IDs are required for traceability — never omit
+- KG query may return empty for new entities — record as gap, don't assume non-existence
+- Legacy palace rooms may not exist — use manifest rooms only
