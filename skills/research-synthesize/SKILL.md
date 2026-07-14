@@ -18,7 +18,6 @@ Deduplicate overlapping facts, resolve conflicts by date, list remaining gaps.
 
 - MemPalace findings (drawer IDs + dates)
 - Wiki findings (wikilink citations + dates)
-- Query budget used
 
 ## Process
 

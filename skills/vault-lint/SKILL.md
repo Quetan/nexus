@@ -4,7 +4,7 @@ description: >
   Use when checking Obsidian LLM Wiki health — orphan detection, staleness,
   contradictions, coverage gaps, index drift, broken wikilinks. Triggers on
   "check wiki health", "lint vault", "wiki health check", "проверь вики".
-  Requires user-seekstone MCP. Report only — never creates, edits, or deletes
+  Requires seekstone MCP. Report only — never creates, edits, or deletes
   pages. Appends summary to wiki/log.md.
 ---
 

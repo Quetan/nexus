@@ -39,14 +39,14 @@ verification for each step. Delivered in Russian or English (match user request)
 
 ### Верификация
 - [ ] `npx tsc --noEmit`
-- [ ] `jest --testPathPattern=<pattern>`
+- [ ] `npm run typecheck && npm run lint`
 - [ ] `curl <endpoint>` — smoke test
 
 ### Риски / открытые вопросы
 - ...
 
 ### Handoff
-Исследование завершено. Утвердите план или скажите «приступаем к реализации».
+Исследование завершено. Утвердите план перед реализацией.
 ```
 
 ## Constraints

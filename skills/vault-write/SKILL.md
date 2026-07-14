@@ -4,7 +4,7 @@ description: >
   Use when preserving session work, external sources, or agent outputs as source
   notes in the Obsidian LLM Wiki — even if the user doesn't explicitly say "save"
   or "write". Triggers on "save session", "write note", "сохрани", "запиши
-  результаты". Requires user-seekstone MCP (or file I/O fallback). Automatically
+  результаты". Requires seekstone MCP (or file I/O fallback). Automatically
   calls vault-index for log update after save. Do NOT use for MemPalace storage,
   codegraph output, or non-wiki markdown editing. Requires: vault-index.
 ---

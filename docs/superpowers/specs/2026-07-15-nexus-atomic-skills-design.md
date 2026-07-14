@@ -9,8 +9,8 @@ Two monolithic agent skills — `surgut-research` (338 lines) and `obsidian-task
 ```mermaid
 graph RL
   SR[surgut-research 338L] --> OTN[obsidian-task-note 227L + 9 refs]
-  SR --> MCP1[user-mempalace]
-  OTN --> MCP2[user-seekstone]
+  SR --> MCP1[mempalace]
+  OTN --> MCP2[seekstone]
 ```
 
 **Problems:**

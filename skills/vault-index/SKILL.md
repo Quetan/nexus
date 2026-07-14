@@ -4,7 +4,7 @@ description: >
   Use when updating wiki/index.md, wiki/log.md, or project 00_Index.md after
   vault-write or vault-ingest operations. Called automatically by vault-write
   and vault-ingest. Standalone use: when manually fixing index drift or log
-  entries. Requires user-seekstone MCP.
+  entries. Requires seekstone MCP.
 ---
 
 # vault-index

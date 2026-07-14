@@ -2,7 +2,7 @@
 name: research-mempalace
 description: >
   Use when extracting context, facts, or decisions from MemPalace for a research
-  task. Called by nexus during Phase 2a vault research. Requires user-mempalace MCP.
+  task. Called by nexus during Phase 2a vault research. Requires mempalace MCP.
   Standalone use: when you need to search MemPalace for project context. Do NOT
   use for Obsidian wiki queries (use research-wiki) or code exploration.
 ---
@@ -18,7 +18,6 @@ and prior work. Returns structured findings with drawer IDs and date stamps.
 
 - **Task scope**: entities, repos, ticket IDs
 - **Rooms**: palace rooms mapped to the project (from manifest)
-- **Query budget**: narrow (2-3), default (3-5), broad (4-6)
 
 ## Process
 
@@ -45,7 +44,6 @@ and prior work. Returns structured findings with drawer IDs and date stamps.
 
 ## Constraints
 
-- Respect query budget — don't exceed the allocated count
 - If a search returns nothing, record it as a gap (don't invent)
 - Always return drawer IDs for traceability
 - Never read code or grep files during this phase

@@ -19,7 +19,6 @@ Format research findings into a structured Research Brief in Russian, including
 
 - Synthesized context from `research-synthesize`
 - Code exploration findings (schema, endpoints, configs, key files)
-- Query budget (narrow/default/broad)
 - Task description
 
 ## Template
@@ -28,8 +27,6 @@ Format research findings into a structured Research Brief in Russian, including
 ## Research Brief
 
 **Задача:** <одна строка>
-**Query budget:** <N> palace / <M> wiki
-**Onboarding:** status ✓ | manifest ✓
 
 ### Контекст
 - <факт> — источник: palace drawer `<id>` / wiki `[[path]]`

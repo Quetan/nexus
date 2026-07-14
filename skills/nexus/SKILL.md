@@ -5,8 +5,7 @@ description: >
   implementation — any project with MemPalace + Obsidian LLM Wiki, even if the
   user doesn't name a specific project. Triggers on "/nexus", "nexus research",
   "собери контекст", "исследуй перед реализацией", or any task in a tracked
-  project workspace. Also triggers on "/surgut-research", "surgut research".
-  Do NOT use when only vault operations (write/ingest/query/lint) are needed
+  project workspace. Do NOT use when only vault operations (write/ingest/query/lint) are needed
   without research flow. Requires: onboarding-harness, research-mempalace,
   research-wiki, research-synthesize, research-brief, research-plan, vault-query.
 ---
@@ -33,7 +32,7 @@ newer record wins (by date).
 
 ### Pre-flight
 - [ ] Phase 0: Onboarding harness — delegate to `onboarding-harness`
-- [ ] Phase 1: Decompose request — entities, repos, query budget
+- [ ] Phase 1: Decompose request — entities, repos
 
 ### Vault Research — NO code until synthesis
 - [ ] Phase 2a: Parallel research-mempalace + research-wiki (via vault-query)
@@ -57,7 +56,6 @@ newer record wins (by date).
 
 | Dimension | Output |
 | --- | --- |
-| Query budget | narrow / default / broad |
 | Entities | services, tables, features, ticket ids |
 | Repos | from project context |
 | Task type | migration, bugfix, feature, cross-service |
@@ -98,7 +96,7 @@ Delegate to `research-plan`. Deliver in user's language.
 
 ### Phase 6 — Handoff
 
-Wait for user approval or «приступаем к реализации» before any coding.
+Wait for user approval before any coding.
 
 ### Phase 7 — Wiki Capture
 
@@ -108,7 +106,6 @@ Skip for routine bugfixes with no new decisions.
 ## Pre-delivery Validation
 
 - [ ] Harness check completed
-- [ ] Query budget documented
 - [ ] Vault research completed before code (except peek)
 - [ ] Both palace and wiki tracks ran
 - [ ] Every fact has source (drawer id or wikilink)
@@ -132,7 +129,7 @@ Skip for routine bugfixes with no new decisions.
 | "Faster to grep code" | Code after vault synthesis |
 | "User said skip wiki" | Wiki is mandatory; record gap if empty |
 | "I'll write migration now" | Brief + plan first |
-| "Too small for brief+plan" | Still deliver both; use Narrow budget |
+| "Too small for brief+plan" | Still deliver both; use the full workflow |
 
 ## Quick Reference
 

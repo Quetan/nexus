@@ -11,7 +11,6 @@ You are Subagent A — MemPalace research. Your task:
 
 Task scope: {entities, repos, ticket IDs}
 Palace rooms: {rooms}
-Query budget: {N} queries
 
 1. Search MemPalace: mempalace_search for each entity/room
 2. Query KG: mempalace_kg_query for each entity
@@ -30,7 +29,6 @@ Prompt template:
 You are Subagent B — Wiki research. Your task:
 
 Task scope: {entities, topics, ticket IDs}
-Query budget: {N} queries
 Project: {project}
 
 1. Read wiki/index.md

@@ -3,7 +3,7 @@ name: research-wiki
 description: >
   Use when extracting context from Obsidian LLM Wiki for a research task. Called
   by nexus during Phase 2a vault research. Delegates actual wiki queries to
-  vault-query. Requires: vault-query, user-seekstone MCP.
+  vault-query. Requires: vault-query, seekstone MCP.
   Standalone use: when you need to look up project knowledge from the wiki
   without the full research flow. Do NOT use for MemPalace queries (use
   research-mempalace) or code exploration.
@@ -19,7 +19,6 @@ Returns wikilink-cited findings for the research task.
 ## Input
 
 - **Task scope**: entities, topics, ticket IDs
-- **Query budget**: narrow (2-3), default (3-5), broad (4-6)
 
 ## Process
 
@@ -43,7 +42,6 @@ Returns wikilink-cited findings for the research task.
 
 - Vault-only by default. External sources (web, codegraph) only if user explicitly allows.
 - Conflicts found in wiki → pass to `research-synthesize` with both dates.
-- Respect query budget — don't exceed the allocated count.
 - If topic has no record, note it as a gap.
 
 ## Gotchas

@@ -4,7 +4,7 @@ description: >
   Use when answering questions from the Obsidian LLM Wiki — even if the user
   doesn't name the wiki explicitly. Triggers on "спроси вики", "what does the
   wiki say", "look up in vault", "найди в базе знаний". Returns answers with
-  full-path wikilink citations. Vault-only by default. Requires user-seekstone
+  full-path wikilink citations. Vault-only by default. Requires seekstone
   MCP. Do NOT use for MemPalace queries, web searches, codegraph lookups, or
   non-wiki knowledge bases.
 ---

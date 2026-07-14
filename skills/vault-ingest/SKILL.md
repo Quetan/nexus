@@ -3,7 +3,7 @@ name: vault-ingest
 description: >
   Use when integrating source notes from sources/ into wiki entity, concept,
   decision, and task pages. Triggers on "ingest", "integrate source",
-  "разложи по полкам". Requires user-seekstone MCP. Automatically calls
+  "разложи по полкам". Requires seekstone MCP. Automatically calls
   vault-index for index/log updates. Do NOT use for initial session capture
   (use vault-write) or for vault queries (use vault-query). Requires: vault-index.
 ---

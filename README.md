@@ -62,8 +62,8 @@ graph TD
 
 ## Requirements
 
-- `user-mempalace` MCP server (for palace queries)
-- `user-seekstone` MCP server (for wiki operations)
+- `mempalace` MCP server (for palace queries)
+- `seekstone` MCP server (for wiki operations)
 - Obsidian vault with LLM Wiki structure
 
 ## Origin
