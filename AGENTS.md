@@ -4,7 +4,7 @@
 
 Refactor `surgut-research` and `obsidian-task-note` into a modular atomic skill system in the `~/nexus` repository.
 
-**Goal:** Replace two monolithic skills (~565 combined lines) with ~13 atomic single-purpose skills in one repo. Each skill follows the Agent Skills spec (agentskills.io), is <200 lines, uses JIT-loaded references for token economy.
+**Goal:** Replace two monolithic skills (~565 combined lines) with 12 atomic single-purpose skills in one repo. Each skill follows the Agent Skills spec (agentskills.io), is <200 lines, uses JIT-loaded references for token economy.
 
 ## Architecture Decisions (from Q&A)
 
