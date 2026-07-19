@@ -13,7 +13,7 @@ description: >
 
 ## What it does
 
-Evidence-gated raw capture of session work into `sources/` directory. Every
+Evidence-gated raw capture of session work into `raw/` directory. Every
 claim is tagged `user:`, `vault:`, or `UNVERIFIED` before writing.
 
 Use for preserving session work, external sources, and agent outputs. Valuable

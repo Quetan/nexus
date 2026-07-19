@@ -34,7 +34,7 @@ Refactor `surgut-research` and `obsidian-task-note` into a modular atomic skill 
 │   ├── research-synthesize/    # Merge sources, conflict resolution
 │   ├── research-brief/         # Generate Research Brief (Russian)
 │   ├── research-plan/          # Generate Implementation Plan
-│   ├── vault-write/            # Evidence-gated raw capture → sources/
+│   ├── vault-write/            # Evidence-gated raw capture → raw/
 │   ├── vault-ingest/           # Source → wiki pages
 │   ├── vault-query/            # Medium vault research
 │   ├── vault-lint/             # Wiki health check

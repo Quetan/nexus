@@ -21,11 +21,21 @@ Note in output: "seekstone unavailable — using file I/O fallback"
 
 ## Vault Path Convention
 
-All paths are relative to Obsidian vault root:
-- `wiki/index.md`
-- `wiki/log.md`
-- `sources/DD.MM.YYYY/project/slug.md`
-- `projects/<project>/Entities/<entity>.md`
-- `projects/<project>/Concepts/<concept>.md`
+All paths are relative to vault root. Use `<project>/` subdir for known projects;
+flat `raw/DD.MM.YYYY/<slug>.md` is also valid.
+
+| Scope | Path pattern |
+|-------|-------------|
+| Index | `wiki/index.md` |
+| Log | `wiki/log.md` |
+| Raw source | `raw/DD.MM.YYYY/<project>/<slug>.md` |
+| Project entity | `wiki/projects/<project>/Entities/<entity>.md` |
+| Project concept | `wiki/projects/<project>/Concepts/<concept>.md` |
+| Project decision | `wiki/projects/<project>/Decisions/<slug-DD-MM-YYYY>.md` |
+| Library index | `wiki/library/00_Index.md` |
+| Library entity | `wiki/library/<Topic>/Entities/<entity>.md` |
+| Library concept | `wiki/library/<Topic>/Concepts/<concept>.md` |
+
+`<project>` mapping: `surgut` → `wiki/projects/surgut/`, `infrastructure` → `wiki/projects/infrastructure/`, `library/<topic>` → `wiki/library/<Topic>/`.
 
 Wikilinks in content: full vault-relative paths, no `.md`, no `../`.

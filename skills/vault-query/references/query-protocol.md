@@ -17,10 +17,10 @@ Optional structured findings when requested:
 
 ```markdown
 ### Findings
-- <fact> — [[projects/<project>/...]]
+- <fact> — [[wiki/projects/<project>/...]]
 
 ### Prior Decisions
-- <decision> — [[projects/<project>/Decisions/...]]
+- <decision> — [[wiki/projects/<project>/Decisions/...]]
 
 ### Gaps
 - Topic "<topic>" — vault has no record

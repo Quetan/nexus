@@ -34,7 +34,7 @@
 
 ```json
 {
-  "sources/DD.MM.YYYY/project/slug.md": "sha256hex",
+  "raw/DD.MM.YYYY/<project>/<slug>.md": "sha256hex",
   ...
 }
 ```

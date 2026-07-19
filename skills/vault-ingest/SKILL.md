@@ -1,7 +1,7 @@
 ---
 name: vault-ingest
 description: >
-  Use when integrating source notes from sources/ into wiki entity, concept,
+  Use when integrating source notes from raw/ into wiki entity, concept,
   decision, and task pages. Triggers on "ingest", "integrate source",
   "разложи по полкам". Requires seekstone MCP. Automatically calls
   vault-index for index/log updates. Do NOT use for initial session capture
@@ -13,7 +13,7 @@ description: >
 ## What it does
 
 Decompose source notes into wiki pages — entities, concepts, decisions, tasks.
-Updates wiki/index.md, project 00_Index.md, and log.md through vault-index.
+Updates wiki/index.md, wiki/projects/<project>/00_Index.md, and wiki/log.md through vault-index.
 
 ## References
 

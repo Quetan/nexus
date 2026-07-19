@@ -34,8 +34,8 @@ Returns wikilink-cited findings for the research task.
 
 ```markdown
 ### Wiki Findings
-- <fact> — [[projects/<project>/Entities/<entity>|<Display>]]
-- <decision> — [[projects/<project>/Decisions/<slug>|<Display>]]
+- <fact> — [[wiki/projects/<project>/Entities/<entity>|<Display>]]
+- <decision> — [[wiki/projects/<project>/Decisions/<slug>|<Display>]]
 ```
 
 ## Constraints

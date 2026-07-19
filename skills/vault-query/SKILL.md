@@ -35,8 +35,8 @@ Load when needed:
 
 Answer with inline citations:
 ```markdown
-<fact> — [[projects/<project>/Entities/<entity>|<Display>]]
-<fact> — [[projects/<project>/Concepts/<concept>|<Display>]]
+<fact> — [[wiki/projects/<project>/Entities/<entity>|<Display>]]
+<fact> — [[wiki/projects/<project>/Concepts/<concept>|<Display>]]
 ```
 
 ## Conflict Handling

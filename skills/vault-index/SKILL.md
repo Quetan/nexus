@@ -1,7 +1,7 @@
 ---
 name: vault-index
 description: >
-  Use when updating wiki/index.md, wiki/log.md, or project 00_Index.md after
+  Use when updating wiki/index.md, wiki/log.md, or wiki/projects/<project>/00_Index.md after
   vault-write or vault-ingest operations. Called automatically by vault-write
   and vault-ingest. Standalone use: when manually fixing index drift or log
   entries. Requires seekstone MCP.
@@ -14,7 +14,7 @@ description: >
 Maintain the wiki catalog and chronology:
 - Append entries to `wiki/log.md`
 - Append entries to `wiki/index.md`
-- Append entries to `projects/<project>/00_Index.md`
+- Append entries to `wiki/projects/<project>/00_Index.md`
 
 ## Process
 
@@ -34,8 +34,8 @@ Rules:
 ### index.md entry
 
 ```markdown
-- [[projects/<project>/Entities/<entity>|<Display Name>]] — one-line summary
-- [[projects/<project>/Concepts/<concept>|<Display Name>]] — one-line summary
+- [[wiki/projects/<project>/Entities/<entity>|<Display Name>]] — one-line summary
+- [[wiki/projects/<project>/Concepts/<concept>|<Display Name>]] — one-line summary
 ```
 
 ### 00_Index.md

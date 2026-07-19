@@ -23,6 +23,7 @@ title: "<what was done>"
 date: DD.MM.YYYY
 project: <project-slug>
 type: source
+tags: [source, project/<slug>]
 topics: [kebab-case, keywords]
 ---
 
