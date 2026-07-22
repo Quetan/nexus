@@ -24,7 +24,8 @@ for the file-back step.
 
 Load these when needed:
 - Read [references/write-protocol.md] **before drafting a source note** — project resolution, evidence rules, save flow
-- Read [references/consistency-rules.md] **if unsure about date format or frontmatter fields** — naming, dates, frontmatter standards
+- Read [references/consistency-rules.md] **when writing frontmatter, creating file paths, or formatting dates** — naming, dates, frontmatter standards
+- Read [references/vault-conventions.md] **before creating any wiki page** — six enforced structural rules
 - Read [references/seekstone.md] **if seekstone MCP returns errors** — file I/O fallback details
 
 ## Process

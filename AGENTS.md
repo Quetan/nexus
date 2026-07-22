@@ -111,6 +111,22 @@ Before each commit:
 | Requires-skill notation | Embedded in `description` as `Requires: skill-a, skill-b` |
 | Optional fields | `metadata`, `license`, `compatibility` (per agentskills.io spec) |
 
+## Vault Conventions — Enforced Structural Rules
+
+Шесть обязательных правил для wiki-структуры, жизненного цикла и покрытия.  
+Детали: `skills/vault-write/references/vault-conventions.md`
+
+| # | Правило | Enforcement | Tier |
+|---|---------|-------------|------|
+| 0.1 | **Topic vs Concept**: Topic без даты, Concept с датой (auto-add) | vault-ingest auto-adds date to Concepts | 🔴 Hard |
+| 0.2 | **lifecycle**: `living\|frozen` — Decisions/dated Concepts default frozen, merge требует одобрения для frozen | vault-ingest checks before auto-merge | 🟡 Soft |
+| 0.3 | **Raw Sources prefix**: каждая запись нуждается в `⏳ pending` или `✅ ingested` | vault-index auto-adds ⏳, vault-lint reports | 🔵 Audit |
+| 0.4 | **Archive convention**: `status: archived\|deprecated` → физически в `/archive/` | vault-ingest rejects, vault-lint reports | 🔴 Hard |
+| 0.5 | **Hub rule**: Entity с ≥5 backlinks нуждается в `00_Index.md` | vault-lint reports (manual fix) | 🔵 Audit |
+| 0.6 | **Dataview coverage**: каждый namespace в `wiki/index.md` FROM | vault-lint reports gaps | 🔵 Audit |
+
+**Backward compatibility:** Правила применяются к новым страницам. Существующие нарушения репортятся как `[LEGACY]`.
+
 ## Schema Co-evolution
 
 AGENTS.md evolves with the wiki and the skills. After each significant ingest or after discovering a pattern that works (or doesn't), update this file:

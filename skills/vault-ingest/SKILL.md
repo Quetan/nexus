@@ -19,11 +19,16 @@ Updates wiki/index.md, wiki/projects/<project>/00_Index.md, and wiki/log.md thro
 
 Load when needed:
 - Read [references/ingest-protocol.md] **before decomposing a source** — cache check, overlap scan, page type mapping
+- Read [references/vault-conventions.md] **before creating/updating pages** — enforcement of conventions 0.1, 0.2, 0.4
 
 ## Process
 
 0. **Cache check** — if source SHA256 unchanged vs `.llm-wiki/ingest-cache.json` → skip
 1. **Read source** — decompose into entities, concepts, decisions, data points
+1.5. **Convention enforcement** (vault-conventions.md):
+   - Rule 0.1: Concepts → auto-add date if missing
+   - Rule 0.2: Decisions/dated Concepts → set lifecycle:frozen (default), frozen pages require user approval for merge
+   - Rule 0.4: Archived pages → verify /archive/ path, reject if outside
 2. **Discuss takeaways** — discuss key findings with the user: what to emphasize, what to skip, what's surprising
 3. **Overlap scan** — check existing wiki pages for matching content
 3. **Propose change package** — list new pages + updates + contradictions

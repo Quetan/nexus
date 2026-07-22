@@ -15,8 +15,15 @@ Maintain the wiki catalog and chronology:
 - Append entries to `wiki/log.md`
 - Append entries to `wiki/index.md`
 - Append entries to `wiki/projects/<project>/00_Index.md`
+- Enforce Raw Sources prefix convention (rule 0.3)
 
 ## Process
+
+1. **Update indexes** — append to log.md, index.md, 00_Index.md
+2. **Raw Sources prefix enforcement** (convention 0.3):
+   - Scan Raw Sources section in 00_Index.md
+   - Auto-add `⏳ pending` prefix to raw/ links if missing
+   - Log warning if non-raw links lack prefix
 
 ### log.md entry
 
@@ -59,6 +66,6 @@ append to avoid duplicates.
 
 ## Gotchas
 
-- Read existing index content before append — avoid duplicates
-- Never rewrite existing entries — append only
-- Full vault paths only (no .md, no ../)
+- Read existing index before append — duplicate detection required
+- Raw Sources links without ⏳/✅ → auto-add ⏳ pending (convention 0.3)
+- Full vault paths only (no `.md`, no `../`) — relative paths break indexes

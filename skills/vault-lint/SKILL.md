@@ -25,6 +25,10 @@ changes. Appends a summary entry to `wiki/log.md`.
 | Coverage gaps | Topics mentioned in log but no dedicated page |
 | Index drift | Pages not listed in wiki/index.md or project 00_Index.md |
 | Broken wikilinks | `[[links]]` that don't resolve to existing pages |
+| Raw Sources prefix | Entries missing ⏳/✅ prefix (convention 0.3) |
+| Archived page path | archived/deprecated outside /archive/ (convention 0.4) |
+| Missing hubs | Entities with ≥5 backlinks, no 00_Index (convention 0.5) |
+| Dataview coverage | Namespaces not in wiki/index.md FROM (convention 0.6) |
 
 ## References
 
@@ -54,6 +58,10 @@ Load when needed:
 - Coverage gaps: <N> PASS/WARN/FAIL
 - Index drift: <N> PASS/WARN/FAIL
 - Broken wikilinks: <N> PASS/WARN/FAIL
+- Raw Sources prefix: <N> PASS/WARN/FAIL
+- Archived page path: <N> PASS/WARN/FAIL
+- Missing hubs: <N> PASS/WARN/FAIL
+- Dataview coverage: <N> PASS/WARN/FAIL
 ```
 
 ## Constraints
@@ -61,9 +69,3 @@ Load when needed:
 - Report only — never create, edit, or delete pages
 - Only append to wiki/log.md (no other writes)
 - If seekstone is down → report as unable to check
-
-## Gotchas
-
-- Report only — never create, edit, or delete pages
-- Only append to log.md (no other writes)
-- seekstone down → report as unable to check
