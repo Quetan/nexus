@@ -63,7 +63,8 @@ newer record wins (by date).
 ### References
 
 Load when needed:
-- Read [references/subagent-prompts.md] **before dispatching Phase 2a sub-agents** — prompt templates for parallel research
+- Read [references/subagent-prompts.md] **before dispatching Phase 2a sub-agents** — prompt templates for parallel vault research (A+B only)
+- Read [references/code-exploration-prompt.md] **before Phase 3** — prompt for code exploration subagent
 
 ### Phase 2a — Vault Research (parallel)
 
@@ -119,7 +120,7 @@ Skip for routine bugfixes with no new decisions.
 
 - Runtime ports, credentials, docker: palace manifest only — not markdown
 - Wiki track is mandatory even if user says skip; record gap if vault empty
-- Older record does not win — newer date always wins
+- Older record does not win — newer date wins (equal/missing dates → ask user)
 
 ## Anti-patterns
 

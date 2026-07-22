@@ -31,21 +31,21 @@ Load when needed:
    - Rule 0.4: Archived pages → verify /archive/ path, reject if outside
 2. **Discuss takeaways** — discuss key findings with the user: what to emphasize, what to skip, what's surprising
 3. **Overlap scan** — check existing wiki pages for matching content
-3. **Propose change package** — list new pages + updates + contradictions
-4. **User approval** — new pages need explicit approval; contradictions → ask
-5. **Execute** — create/update pages → call `vault-index` (all indexes + log)
-6. **Cache** — update `.llm-wiki/ingest-cache.json` with source SHA256
-7. **Verify** — read back created pages
+4. **Propose change package** — list new pages + updates + contradictions
+5. **User approval** — new pages need explicit approval; contradictions → ask
+6. **Execute** — create/update pages → call `vault-index` (all indexes + log)
+7. **Cache** — update `.llm-wiki/ingest-cache.json` with source SHA256
+8. **Verify** — read back created pages
 
 ## Constraints
 
 - SHA256 computation failure → fallback to cache miss (never block)
-- One source should update 5-15 wiki pages across entities, concepts, decisions, and topics
+- One source typically updates 5-15 wiki pages across entities, concepts, decisions, and topics — small/narrow sources may legitimately produce fewer; precision over count
 - New pages need explicit user approval before creation
 - Contradictions with existing wiki content → ask user (no silent newer-wins)
 
 ## Gotchas
 
-- One source should update 5-15 wiki pages — don't single-summary
+- Typical range: 5-15 wiki pages. Real concern: don't collapse into single summary. Small sources producing 1-2 pages are fine if properly decomposed.
 - SHA256 cache prevents re-processing — check before reading source
 - User must approve new pages — draft first

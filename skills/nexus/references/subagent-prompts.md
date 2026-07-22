@@ -1,6 +1,6 @@
-# Subagent Prompts
+# Subagent Prompts — Phase 2a Vault Research
 
-Load this file when dispatching parallel sub-agents during Phase 2a.
+Load this file when dispatching parallel sub-agents during **Phase 2a** (vault research only, no code).
 
 ## Subagent A — research-mempalace
 
@@ -40,20 +40,4 @@ Return: Markdown list of findings with [[wikilink]] sources.
 Rules: Vault-only. No code. Record gaps.
 ```
 
-## Subagent C — Code Exploration
-
-Prompt template:
-
-```
-You are Subagent C — Code exploration. Guided by these vault findings:
-
-{vault_findings}
-
-Explore the codebase for:
-1. Schema (tables, keys, nullable, indexes)
-2. Endpoints (routes, methods, middleware)
-3. Configs (env vars, ports)
-4. Key files (controllers, migrations, routes)
-
-Return: актуальное состояние for the research brief.
-```
+**Note:** For Phase 3 code exploration, load `code-exploration-prompt.md` separately after Phase 2b synthesis.
