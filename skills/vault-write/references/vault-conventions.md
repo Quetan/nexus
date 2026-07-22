@@ -8,7 +8,7 @@
 - **Существующие страницы:** нарушения репортятся vault-lint как `[LEGACY]`, миграция опциональна
 - **Enforcement tiers:**
   - 🔴 **Hard gate:** vault-ingest/vault-write отклоняют операцию
-  - 🟡 **Soft gate:** предупреждение + запрос подтверждения
+  - 🟡 **Soft gate:** auto-fix with notification OR warning + confirmation prompt
   - 🔵 **Audit-only:** vault-lint репортит, не блокирует
 
 ---
@@ -25,7 +25,10 @@
 
 **Enforcement:** 🔴 Hard gate
 - vault-ingest при создании Concept: `date` отсутствует → auto-add current date
-- vault-ingest при создании Topic: `date` присутствует → reject creation
+- vault-ingest при создании Topic: `date` присутствует → auto-remove with warning
+
+**Rationale:** Topic = stable, dateless category. Concept = time-bound insight, requires date.
+Symmetric remediation (auto-fix both directions) reduces friction while enforcing semantics.
 
 ---
 
@@ -76,7 +79,7 @@
 - ❌ [[raw/notes.md]]  ← INVALID
 ```
 
-**Enforcement:** 🔵 Audit-only
+**Enforcement:** 🟡 Soft gate (auto-fix + audit)
 - vault-index при обновлении Raw Sources:
   - Если ссылка на `raw/` без префикса → автоматически добавить `⏳ pending`
 - vault-lint:
@@ -93,10 +96,11 @@
 - Тег `#archived` **не заменяет** физический перенос
 
 **Enforcement:** 🔴 Hard gate
-- vault-ingest при создании страницы:
-  - Если `status == "archived" | "deprecated"` AND путь не содержит `/archive/`:
-    - **Отклонить** создание
+- vault-ingest/vault-write при создании страницы ИЛИ изменении `status` → `archived|deprecated`:
+  - Если путь не содержит `/archive/`:
+    - **Отклонить** операцию
     - Сообщить: "Archived pages must be in /archive/ directory"
+  - Applies to: `seekstone_create_note`, `seekstone_patch_frontmatter`
 - vault-lint:
   - Найти все страницы с `status: archived | deprecated`
   - Проверить путь
@@ -113,7 +117,9 @@
 
 **Enforcement:** 🔵 Audit-only
 - vault-lint проверка:
-  1. Извлечь все `[[Entity]]` wikilinks из `wiki/library/*/Concepts/**/*.md`
+  1. Извлечь все `[[Entity]]` wikilinks из:
+     - `wiki/library/*/Concepts/**/*.md`
+     - `wiki/projects/*/Concepts/**/*.md`
   2. Подсчитать backlinks для каждой Entity
   3. Для каждой Entity с ≥5 backlinks:
      - Проверить существование `00_Index.md`:
