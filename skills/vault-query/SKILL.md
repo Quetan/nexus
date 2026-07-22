@@ -44,11 +44,16 @@ Answer with inline citations:
 If two vault sources disagree → show both claims with frontmatter dates and ask
 user. Do not silently pick newer.
 
+**Rationale:** Within-wiki conflicts require manual resolution — the vault is the
+authoritative source, and contradictions indicate either stale content or legitimate
+divergence that needs human judgment.
+
 ## Constraints
 
 - Vault-only by default. External sources only if user explicitly allows.
 - If vault has no record for a topic → say so explicitly.
 - Propose `vault-write` only when accumulating durable knowledge.
+- **When called from nexus workflow:** defer file-back proposal to Phase 7 (wiki capture happens post-plan, with user approval)
 
 ## Gotchas
 

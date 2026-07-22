@@ -21,8 +21,7 @@ Note in output: "seekstone unavailable — using file I/O fallback"
 
 ## Vault Path Convention
 
-All paths are relative to vault root. Use `<project>/` subdir for known projects;
-flat `raw/DD.MM.YYYY/<slug>.md` is also valid.
+All paths are relative to vault root and **must include** `<project>/` subdirectory.
 
 | Scope | Path pattern |
 |-------|-------------|
@@ -36,6 +35,6 @@ flat `raw/DD.MM.YYYY/<slug>.md` is also valid.
 | Library entity | `wiki/library/<Topic>/Entities/<entity>.md` |
 | Library concept | `wiki/library/<Topic>/Concepts/<concept>.md` |
 
-`<project>` mapping: `surgut` → `wiki/projects/surgut/`, `infrastructure` → `wiki/projects/infrastructure/`, `library/<topic>` → `wiki/library/<Topic>/`.
+Path mapping follows `consistency-rules.md` — any `<project-slug>` maps to `wiki/projects/<project-slug>/`.
 
 Wikilinks in content: full vault-relative paths, no `.md`, no `../`.

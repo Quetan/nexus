@@ -2,6 +2,12 @@
 
 ## Date Format
 
+⚠️ **Note:** Decision/Task pages use **two formats**:
+- Frontmatter `date` field: `YYYY-MM-DD` (example: `"2026-07-12"`)
+- Filename suffix: `DD-MM-YYYY` (example: `db-schema-12-07-2026.md`)
+
+This is intentional — Entity/Concept/Topic don't use date in filename at all.
+
 | Page type | Format | Example |
 |-----------|--------|---------|
 | Raw source | `DD.MM.YYYY` | `12.07.2026` |
@@ -101,8 +107,10 @@ related: []
 ## Path Mapping
 
 `project` field value → vault path:
-- `surgut`, `immich`, `docbuilder`, `nexus`, `infrastructure` → `wiki/projects/{project}/`
+- Any project slug → `wiki/projects/<project-slug>/`
 - `library/<topic>` → `wiki/library/<Topic>/`
+
+**Examples:** `surgut` → `wiki/projects/surgut/`, `infrastructure` → `wiki/projects/infrastructure/`
 
 ## General Rules
 - `title`: always quoted, required

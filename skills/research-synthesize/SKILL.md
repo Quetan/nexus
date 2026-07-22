@@ -48,6 +48,12 @@ Deduplicate overlapping facts, resolve conflicts by date, list remaining gaps.
 - Never silently pick a winner when dates are equal — always flag for user
 - Do not blend or interpolate conflicting facts
 - Preserve source traceability for every claim
+- **Cross-source conflict resolution:** MemPalace and Wiki are external memories;
+  newer date wins by default (unlike within-wiki conflicts in vault-query, which
+  always escalate to user)
+
+**TODO (future):** Subagents should return `{status: success|partial|failed, data: ...}`
+to distinguish crash/timeout from legitimate empty result. Current behavior: both appear as "no data".
 
 ## Gotchas
 
