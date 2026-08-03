@@ -48,7 +48,8 @@ newer record wins (by date).
 
 ### Post-delivery
 - [ ] Phase 7: Wiki capture if significant new knowledge
-  - Delegate to vault-write / vault-ingest with user approval
+  - Delegate to `vault-write` (direct wiki write, no raw staging) with user approval
+  - For manual external dumps only: `vault-ingest`
 
 ## Phase Details
 
@@ -101,8 +102,10 @@ Wait for user approval before any coding.
 
 ### Phase 7 — Wiki Capture
 
-If session produced durable knowledge: call `vault-write` / `vault-ingest` with user approval.
-Skip for routine bugfixes with no new decisions.
+If session produced durable knowledge: call `vault-write` (direct wiki write,
+no raw staging) with user approval. Skip for routine bugfixes with no new
+decisions. `vault-ingest` is reserved for manual/external source drops — it
+is never chained after `vault-write`.
 
 ## Pre-delivery Validation
 
@@ -144,4 +147,4 @@ Skip for routine bugfixes with no new decisions.
 | 4 | Brief | `research-brief` |
 | 5 | Plan | `research-plan` |
 | 6 | Handoff | self |
-| 7 | Wiki capture | `vault-write` / `vault-ingest` |
+| 7 | Wiki capture | `vault-write` (direct), or `vault-ingest` for manual raw drops |

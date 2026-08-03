@@ -3,7 +3,7 @@
 ## Flow
 
 1. Resolve project scope (auto or ask)
-2. Read `wiki/index.md` → list candidate pages
+2. Read vault `index.md` → list candidate pages
 3. For each key term: `seekstone_search(query, limit=10)`
 4. For 2-5 central pages: `seekstone_get_backlinks(path)`
 5. Adaptively read relevant notes (entities → concepts → decisions → sources)
@@ -17,10 +17,10 @@ Optional structured findings when requested:
 
 ```markdown
 ### Findings
-- <fact> — [[wiki/projects/<project>/...]]
+- <fact> — [[projects/<project>/Entities/<name>]]
 
 ### Prior Decisions
-- <decision> — [[wiki/projects/<project>/Decisions/...]]
+- <decision> — [[projects/<project>/Decisions/<slug>]]
 
 ### Gaps
 - Topic "<topic>" — vault has no record
@@ -28,6 +28,8 @@ Optional structured findings when requested:
 ### Conflicts
 - <claim A> (date) vs <claim B> (date) — awaiting user
 ```
+
+Wikilinks are vault-root-relative — never use the `wiki/` prefix.
 
 ## Seekstone Fallback
 

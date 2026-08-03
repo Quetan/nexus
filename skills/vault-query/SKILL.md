@@ -24,7 +24,7 @@ Load when needed:
 ## Process
 
 1. **Resolve project scope** — auto (cwd/git/manifest) or ask if ambiguous
-2. Read `wiki/index.md` → list candidate pages
+2. Read vault `index.md` → list candidate pages
 3. For each key term: `seekstone_search(query, limit=10)`
 4. For 2-5 central pages: `seekstone_get_backlinks(path)`
 5. Adaptively read relevant notes (entities > concepts > decisions > sources)
@@ -35,9 +35,11 @@ Load when needed:
 
 Answer with inline citations:
 ```markdown
-<fact> — [[wiki/projects/<project>/Entities/<entity>|<Display>]]
-<fact> — [[wiki/projects/<project>/Concepts/<concept>|<Display>]]
+<fact> — [[projects/<project>/Entities/<entity>|<Display>]]
+<fact> — [[projects/<project>/Concepts/<concept>|<Display>]]
 ```
+
+Wikilinks are vault-root-relative — never use the `wiki/` prefix.
 
 ## Conflict Handling
 

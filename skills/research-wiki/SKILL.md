@@ -22,7 +22,7 @@ Returns wikilink-cited findings for the research task.
 
 ## Process
 
-1. Read `wiki/index.md` → list candidate pages
+1. Read vault `index.md` → list candidate pages
 2. For each entity/topic in task scope:
    - Call `vault-query` with the specific research question
    - Collect findings with full-path wikilink citations
@@ -34,8 +34,8 @@ Returns wikilink-cited findings for the research task.
 
 ```markdown
 ### Wiki Findings
-- <fact> — [[wiki/projects/<project>/Entities/<entity>|<Display>]]
-- <decision> — [[wiki/projects/<project>/Decisions/<slug>|<Display>]]
+- <fact> — [[projects/<project>/Entities/<entity>|<Display>]]
+- <decision> — [[projects/<project>/Decisions/<slug>|<Display>]]
 ```
 
 ## Constraints
@@ -47,4 +47,4 @@ Returns wikilink-cited findings for the research task.
 ## Gotchas
 
 - vault-query is vault-only by default — don't supplement with web/codegraph unless allowed
-- wiki/index.md may be incomplete after many ingests — also search directly
+- index.md may be incomplete after many ingests — also search directly

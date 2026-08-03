@@ -1,5 +1,9 @@
 # Lint Protocol — Wiki Health Check
 
+Read this file when running health checks. All paths are vault-root-relative
+— `projects/`, `library/`, `index.md`, `log.md`. Never prefix wikilinks or
+grep patterns with `wiki/` — vault root IS what was formerly `wiki/`.
+
 ## Checks
 
 ### Orphans
@@ -20,36 +24,52 @@
 - Scan log.md for topics, cross-reference with projects/
 
 ### Index Drift
-- Pages not listed in wiki/index.md or project 00_Index.md
+- Pages not listed in vault `index.md` or project `00_Index.md`
 - Compare actual page files with index entries
 
 ### Broken Wikilinks
 - `[[links]]` that don't resolve to existing vault files
 - Scan all `.md` files for wikilinks, verify targets exist
+- Wikilinks must be vault-root-relative — no `wiki/` prefix, no `../`
 
-### Raw Sources Prefix (Convention 0.3)
-- Каждая запись в `## Raw Sources` секции `00_Index.md` обязана иметь префикс `⏳` или `✅`
-- Scan all `wiki/projects/*/00_Index.md` → extract `## Raw Sources` section
-- For each line starting with `- [[` or `- wiki/`:
-  - Check for `⏳ pending` or `✅ ingested` prefix
-  - If missing → `[ERROR] Unprefixed Raw Sources entry: <line>`
+### Raw Refs in Wiki (Convention 0.3, body part)
+- Wiki pages never reference `raw/` files in body, Related, or Sources sections
+- Scan all `.md` under vault root **excluding** lines inside `## Raw Sources` sections of `00_Index.md` files
+- For each match of `[[raw/...]]` outside that context:
+  - `[ERROR] Page references raw: <path> line <n>`
+- Severity: ERROR
+- Fix: remove the wikilink; if evidence needed, cite claim with `user:`/`vault:`/`UNVERIFIED` tag per evidence rules
+
+### Raw Sources Prefix (Convention 0.3, queue part)
+- Every line in the `## Raw Sources` section of `00_Index.md` must start with `⏳ pending` AND point at `raw/`, OR be a summary line of the form `- ingested → [[<wiki-page>]], ...` after the raw has been consumed
+- Scan all `projects/*/00_Index.md` → extract `## Raw Sources` section
+- For each line:
+  - If it links to `raw/` without `⏳ pending` → `[ERROR] Unprefixed Raw Sources entry: <line>`
+  - If it has `✅ ingested` AND links to `raw/` → `[ERROR] 'ingested' marker on raw link: <line> — replace with wiki links`
+  - If it has no emoji prefix at all → `[ERROR] Unprefixed Raw Sources entry: <line>`
+- Severity: ERROR
+
+### Stale `wiki/` Prefix
+- Wikilinks must be vault-root-relative — `[[projects/...]]` not `[[wiki/projects/...]]`
+- Scan all `.md` files for `[[wiki/` and for markdown links of form `](wiki/`
+- Each match → `[ERROR] Stale wiki/ prefix in link: <path> line <n>`
 - Severity: ERROR
 
 ### Archived Page Path (Convention 0.4)
 - Страницы с `status: archived | deprecated` физически в `/archive/`
 - Find all `.md` files with frontmatter `status: archived` OR `status: deprecated`
-- Verify path contains `wiki/archive/` OR `wiki/projects/*/archive/`
+- Verify path contains `archive/` at any level
 - If not → `[FAIL] Misplaced archived page: <path> (status=<status>)`
 - Severity: FAIL
 
 ### Missing Hubs (Convention 0.5)
 - Entities с ≥5 backlinks из Concept-страниц нуждаются в `00_Index.md`
-- Extract all `[[Entity]]` wikilinks from `wiki/library/*/Concepts/**/*.md`
+- Extract all `[[Entity]]` wikilinks from `library/*/Concepts/**/*.md` and `projects/*/Concepts/**/*.md`
 - Count backlinks per Entity (how many different Concept files mention it)
 - For each Entity with ≥5 backlinks:
   - Check existence of `00_Index.md`:
-    - `wiki/entities/<Entity>/00_Index.md` OR
-    - `wiki/projects/*/entities/<Entity>/00_Index.md`
+    - `entities/<Entity>/00_Index.md` OR
+    - `projects/*/Entities/<Entity>/00_Index.md`
   - If missing → `[WARN] Hub needed: [[Entity]] (<N> backlinks, no 00_Index.md)`
 - Severity: WARN
 - Action: Manual hub creation (not automatic)
@@ -58,12 +78,12 @@
 - Каждый top-level namespace покрыт хотя бы одним dashboard FROM clause
 - Discover top-level namespaces:
   ```bash
-  ls -d wiki/*/ | grep -v -E '(.llm-wiki|.obsidian)'
+  ls -d */ | grep -v -E '(.llm-wiki|.obsidian|.git)'
   ```
-  Example: `wiki/projects/`, `wiki/library/`, `wiki/entities/`, `wiki/topics/`
-- Read `wiki/index.md`, extract all dataview blocks with `FROM`
+  (run inside vault root) Example: `projects/`, `library/`
+- Read `index.md`, extract all dataview blocks with `FROM`
 - For each namespace, check inclusion in at least one `FROM`
-- Report uncovered: `[WARN] Uncovered namespace: wiki/<name>/ not in any FROM clause`
+- Report uncovered: `[WARN] Uncovered namespace: <name>/ not in any FROM clause`
 - Severity: WARN
 
 ## Report Format
@@ -76,7 +96,9 @@
 - Coverage gaps: <N> — PASS/WARN/FAIL
 - Index drift: <N> — PASS/WARN/FAIL
 - Broken wikilinks: <N> — PASS/WARN/FAIL
+- Raw refs in wiki: <N> — PASS/WARN/FAIL
 - Raw Sources prefix: <N> — PASS/WARN/FAIL
+- Stale `wiki/` prefix: <N> — PASS/WARN/FAIL
 - Archived page path: <N> — PASS/WARN/FAIL
 - Missing hubs: <N> — PASS/WARN/FAIL
 - Dataview coverage: <N> — PASS/WARN/FAIL
@@ -87,7 +109,7 @@
 
 ## Log Update
 
-Append entry to wiki/log.md:
+Append entry to `log.md` using vault-root-relative wikilinks:
 
 ```
 ## [YYYY-MM-DD] HH:MM — lint — <summary>

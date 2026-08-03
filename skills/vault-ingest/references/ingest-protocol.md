@@ -1,4 +1,10 @@
-# Ingest Protocol — Source → Wiki Pages
+# Ingest Protocol — Manual Source → Wiki Pages
+
+## Scope
+
+This protocol handles **manual/external source notes** that live in `raw/` —
+files dropped by the user, external dumps, ad-hoc captures. New session work
+never enters `raw/` — `vault-write` writes directly into `wiki/`.
 
 ## Pipeline
 
@@ -19,6 +25,10 @@
 5. **User approval** — new pages need explicit `save`
    - Contradictions: show both claims with dates, ask
 6. **Execute** — create/update pages → vault-index → update cache
+   - Vault-index removes the ⏳ line from `## Raw Sources` and adds
+     ✅ wikilinks to the resulting wiki pages under their typed section
+     (Entities / Concepts / Decisions / Tasks / Topics).
+   - Vault-index never links back to the raw file from a wiki page.
 
 ## Page Type Mapping
 
@@ -30,6 +40,12 @@
 | Action item, tracked work | Task |
 | Cross-cutting grouping | Topic |
 
+## Linking Rules
+
+- Wikilinks vault-root-relative: `[[projects/<p>/Entities/foo]]`
+- Never `[[wiki/projects/...]]` — no `wiki/` prefix
+- Wiki pages never link to `raw/` — raw is staging only
+
 ## Cache Format
 
 ```json
@@ -38,3 +54,9 @@
   ...
 }
 ```
+
+## After Ingest — Raw Source Lifecycle
+
+The source file stays on disk in `raw/DD.MM.YYYY/<project>/<slug>.md` as
+provenance only. The wiki does not link back to it. Periodic archiving of
+`raw/` is out of scope for this skill.

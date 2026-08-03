@@ -63,27 +63,32 @@ Symmetric remediation (auto-fix both directions) reduces friction while enforcin
 
 ---
 
-## 0.3 Raw Sources Status Prefix
+## 0.3 Wiki Pages Never Reference Raw/
 
 **Правило:**
-- Каждая запись в секции `## Raw Sources` проектного `00_Index.md` **обязана** иметь префикс:
-  - `⏳ pending` — ссылка на файл в `raw/` (ещё не обработан)
-  - `✅ ingested` — ссылка на итоговую wiki-страницу (обработан)
-- Запись без префикса — **невалидна**
+- Хранилище `raw/` — это **staging area** для ручных/внешних заметок, ингрессируемых через `vault-ingest`
+- **Wiki-страницы никогда не содержат ссылок** на `raw/` — ни в теле, ни в Related, ни в Sources
+- Исключение — секция `## Raw Sources` проектного `00_Index.md`, которая является очередью инжеста:
+  - `⏳ pending` — ссылка на файл в `raw/` (ещё не обработан, ждёт ручного ingest)
+  - `✅ ingested` — **НЕ используется в этой секции для ссылки на raw**; вместо этого: `✅ [[projects/<p>/Entities/foo]]` указывает на итоговую wiki-страницу
 
 **Примеры:**
 ```markdown
 ## Raw Sources
-- ⏳ pending [[raw/12.07.2026-discovery-session.md]]
-- ✅ ingested [[library/MLOps/Concepts/prometheus-setup.md]]
-- ❌ [[raw/notes.md]]  ← INVALID
+- ⏳ pending [[raw/12.07.2026/discovery-session]]       ← OK, ждёт ingest
+- ✅ [[library/MLOps/Concepts/prometheus-setup]]       ← OK, после ingest заменили ⏳-линию
+- ❌ [[raw/notes.md]] без префикса                     ← INVALID
+- ❌ ✅ ingested [[raw/12.07.2026/foo]]                ← INVALID, raw-links never ✅
 ```
 
 **Enforcement:** 🟡 Soft gate (auto-fix + audit)
+- vault-write **отклонит** draft содержащий wikilink на `raw/` — raw — не ссылочный формат для wiki
 - vault-index при обновлении Raw Sources:
-  - Если ссылка на `raw/` без префикса → автоматически добавить `⏳ pending`
+  - Новая `raw/`-ссылка без префикса → автоматически добавить `⏳ pending`
+  - После `vault-ingest`: удалить ⏳-линию, добавить `✅` **в основные секции** (Entities/Concepts/Decisions/...)
 - vault-lint:
   - Сканирует все `00_Index.md`, репортит строки без префикса как `[ERROR]`
+  - Сканирует все wiki-страницы на ссылку `[[raw/` вне секции Raw Sources → `[ERROR] Page references raw: <path>`
 
 ---
 
@@ -134,7 +139,7 @@ Symmetric remediation (auto-fix both directions) reduces friction while enforcin
 
 **Правило:**
 - Любой существующий top-level namespace (`wiki/projects/`, `wiki/library/`, `wiki/entities/`, `wiki/topics/`, любые будущие) **обязан** быть включён в `FROM`-условия хотя бы одного dashboard
-- Dashboard-файл: `wiki/index.md`
+- Dashboard-файл: `index.md` в корне vault
 - Namespace, не входящий ни в один дашборд → **баг конфигурации**, а не "пока не нужно"
 
 **Enforcement:** 🔵 Audit-only
@@ -142,7 +147,7 @@ Symmetric remediation (auto-fix both directions) reduces friction while enforcin
   1. Обнаружить все top-level namespaces:
      - `ls wiki/*/` (директории, содержащие `.md` файлы)
      - Исключить служебные: `.llm-wiki/`, `.obsidian/`
-  2. Прочитать `wiki/index.md`, извлечь все dataview `FROM` clauses
+  2. Прочитать `index.md` (vault root), извлечь все dataview `FROM` clauses
   3. Проверить покрытие: каждый namespace упоминается в хотя бы одном `FROM`
   4. Репортить непокрытые: `[WARN] Uncovered namespace: wiki/<name>/ not in any FROM clause`
 
@@ -153,3 +158,9 @@ Symmetric remediation (auto-fix both directions) reduces friction while enforcin
 - **Новые страницы:** правила применяются строго
 - **Существующие нарушения:** vault-lint репортит с пометкой `[LEGACY]`
 - **Миграция:** опциональна, инициируется пользователем
+
+## Vault Root Convention
+
+- Wikilinks всегда от корня vault — без префикса `wiki/`
+- `wiki/` является корнем vault: `[[projects/surgut/Entities/foo]]`, не `[[wiki/projects/surgut/Entities/foo]]`
+- `raw/` — соседняя с `wiki/` директория; она не линкуется из wiki-страниц

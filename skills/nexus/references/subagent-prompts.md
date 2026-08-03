@@ -31,7 +31,7 @@ You are Subagent B — Wiki research. Your task:
 Task scope: {entities, topics, ticket IDs}
 Project: {project}
 
-1. Read wiki/index.md
+1. Read vault index.md
 2. Call vault-query for each entity/topic
 3. Collect findings with wikilink citations
 
