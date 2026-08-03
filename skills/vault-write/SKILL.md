@@ -4,7 +4,7 @@ description: >
   Use when preserving session work, external sources, or agent outputs directly
   into the Obsidian LLM Wiki — even if the user doesn't explicitly say "save"
   or "write". Triggers on "save session", "write note", "сохрани", "запиши
-  результаты". Requires seekstone MCP (or file I/O fallback). Automatically
+  результаты". Requires mcpvault MCP (or file I/O fallback). Automatically
   calls vault-index for log/index update after save. Do NOT use for MemPalace
   storage, codegraph output, or non-wiki markdown editing.
   Requires: vault-index.
@@ -30,7 +30,7 @@ Load these when needed:
 - Read [references/write-protocol.md] **before drafting a wiki page** — project resolution, evidence rules, save flow, page-type decision
 - Read [references/consistency-rules.md] **when writing frontmatter, creating file paths, or formatting dates** — naming, dates, frontmatter standards
 - Read [references/vault-conventions.md] **before creating any wiki page** — six enforced structural rules
-- Read [references/seekstone.md] **if seekstone MCP returns errors** — file I/O fallback details
+- Read [references/mcpvault.md] **if mcpvault MCP returns errors** — file I/O fallback details
 
 ## Process
 
@@ -65,5 +65,5 @@ Load these when needed:
 
 - Convention 0.1 auto-fix: Concepts auto-get `date`, Topics never carry `date`
 - Convention 0.2 default: Decisions and dated Concepts default to `lifecycle: frozen`
-- seekstone may be unavailable — have file I/O fallback ready
+- mcpvault may be unavailable — have file I/O fallback ready
 - SHA256 cache belongs to `vault-ingest`, not this skill — direct wiki write skips raw/ entirely

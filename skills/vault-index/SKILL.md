@@ -4,7 +4,7 @@ description: >
   Use when updating vault index.md, log.md, or projects/<p>/00_Index.md after
   vault-write or vault-ingest operations. Called automatically by vault-write
   and vault-ingest. Standalone use: when manually fixing index drift or log
-  entries. Requires seekstone MCP. All paths vault-root-relative — never use
+  entries. Requires mcpvault MCP. All paths vault-root-relative — never use
   the `wiki/` prefix.
 ---
 

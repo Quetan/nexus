@@ -67,7 +67,7 @@ related: []
 1. Show vault-relative path + full draft for every page to be written
 2. Wait for: `save` / `edit` / `skip`
 3. On `save`:
-   - `seekstone_create_note` (or file I/O)
+   - `write_note` (or file I/O)
    - Call `vault-index` with: command=`write`, description, list of created pages, project slug
    - Read back created page to verify
 

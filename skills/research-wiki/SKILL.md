@@ -3,7 +3,7 @@ name: research-wiki
 description: >
   Use when extracting context from Obsidian LLM Wiki for a research task. Called
   by nexus during Phase 2a vault research. Delegates actual wiki queries to
-  vault-query. Requires: vault-query, seekstone MCP.
+  vault-query. Requires: vault-query, mcpvault MCP.
   Standalone use: when you need to look up project knowledge from the wiki
   without the full research flow. Do NOT use for MemPalace queries (use
   research-mempalace) or code exploration.
@@ -27,7 +27,7 @@ Returns wikilink-cited findings for the research task.
    - Call `vault-query` with the specific research question
    - Collect findings with full-path wikilink citations
 3. For architectural/cross-cutting topics:
-   - Follow backlinks from central pages (`seekstone_get_backlinks`)
+   - Follow backlinks from central pages (`search_notes(query="<title>", searchContent=true)` or file I/O grep for `[[<basename>]]`)
    - Read relevant sections adaptively
 
 ## Output

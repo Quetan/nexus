@@ -80,10 +80,10 @@ graph TD
 ## Requirements
 
 - `mempalace` MCP server (for palace queries)
-- `seekstone` MCP server bound to an Obsidian vault (for wiki operations)
+- `mcpvault` MCP server bound to an Obsidian vault (for wiki operations)
 - Obsidian vault with LLM Wiki structure (`wiki/` + `raw/` sibling, e.g.
   `~/Development/obsidian-vault/`)
-- Vault root resolution: via seekstone probe; file I/O fallback reads
+- Vault root resolution: via mcpvault probe; file I/O fallback reads
   `~/Development/obsidian-vault/wiki/`
 
 ## Origin

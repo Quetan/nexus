@@ -105,7 +105,7 @@ Symmetric remediation (auto-fix both directions) reduces friction while enforcin
   - Если путь не содержит `/archive/`:
     - **Отклонить** операцию
     - Сообщить: "Archived pages must be in /archive/ directory"
-  - Applies to: `seekstone_create_note`, `seekstone_patch_frontmatter`
+  - Applies to: `write_note`, `update_frontmatter`
 - vault-lint:
   - Найти все страницы с `status: archived | deprecated`
   - Проверить путь

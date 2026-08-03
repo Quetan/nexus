@@ -21,7 +21,7 @@ Refactor `surgut-research` and `obsidian-task-note` into a modular atomic skill 
 | Session capture path | Direct `vault-write` → `wiki/` (no `raw/` stage) |
 | Manual source path | `raw/` → `vault-ingest` → `wiki/` |
 | Wikilink format | Vault-root-relative: `[[projects/<p>/Entities/foo]]`, never `[[wiki/...]]` |
-| Vault location | Resolved via seekstone MCP; fallback `~/Development/obsidian-vault/wiki/` |
+| Vault location | Resolved via mcpvault MCP; fallback `~/Development/obsidian-vault/wiki/` |
 
 ## Repo Structure
 
@@ -138,13 +138,13 @@ Before each commit:
 | Item | Value |
 |------|-------|
 | Vault repo | `~/Development/obsidian-vault/` (macOS) |
-| Vault root (used by all wikilinks & seekstone paths) | `wiki/` inside that repo |
+| Vault root (used by all wikilinks & its paths) | `wiki/` inside that repo |
 | Raw staging | `raw/DD.MM.YYYY/<project>/<slug>.md` next to `wiki/` |
 | Legacy Linux path | `/srv/cloud/obsidian` — DEPRECATED, do not reference |
 | Session capture flow | `vault-write` → `wiki/<...>` (no `raw/` step) |
 | Manual raw ingest flow | `raw/` → `vault-ingest` → `wiki/` |
 | Wikilink format | `[[projects/<p>/<Bucket>/<name>]]` — no `wiki/` prefix, no `.md` |
-| Vault access | seekstone MCP preferred; file I/O fallback to `~/Development/obsidian-vault/wiki/` |
+| Vault access | mcpvault MCP preferred; file I/O fallback to `~/Development/obsidian-vault/wiki/` |
 | Known legacy | `wiki/log.md` + some `00_Index.md`s contain historical `[[raw/...]]` wikilinks; treated as `[LEGACY]` by rule 0.3, no mass migration |
 
 ## Schema Co-evolution

@@ -4,8 +4,8 @@
 
 1. Resolve project scope (auto or ask)
 2. Read vault `index.md` → list candidate pages
-3. For each key term: `seekstone_search(query, limit=10)`
-4. For 2-5 central pages: `seekstone_get_backlinks(path)`
+3. For each key term: `search_notes(query, limit=10)`
+4. For 2-5 central pages: `search_notes(query="<title>", searchContent=true)` or file I/O grep for `[[<basename>]]`
 5. Adaptively read relevant notes (entities → concepts → decisions → sources)
 6. Synthesize answer with wikilink citations
 
@@ -31,9 +31,9 @@ Optional structured findings when requested:
 
 Wikilinks are vault-root-relative — never use the `wiki/` prefix.
 
-## Seekstone Fallback
+## mcpvault Fallback
 
-If seekstone is down: use file I/O fallback. Read `.md` files directly from the vault directory. Note the fallback in output.
+If mcpvault is down: use file I/O fallback. Read `.md` files directly from the vault directory. Note the fallback in output.
 
 ## Conflict Gate
 

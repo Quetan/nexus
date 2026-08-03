@@ -4,7 +4,7 @@ description: >
   Use when answering questions from the Obsidian LLM Wiki — even if the user
   doesn't name the wiki explicitly. Triggers on "спроси вики", "what does the
   wiki say", "look up in vault", "найди в базе знаний". Returns answers with
-  full-path wikilink citations. Vault-only by default. Requires seekstone
+  full-path wikilink citations. Vault-only by default. Requires mcpvault
   MCP. Do NOT use for MemPalace queries, web searches, codegraph lookups, or
   non-wiki knowledge bases.
 ---
@@ -25,8 +25,8 @@ Load when needed:
 
 1. **Resolve project scope** — auto (cwd/git/manifest) or ask if ambiguous
 2. Read vault `index.md` → list candidate pages
-3. For each key term: `seekstone_search(query, limit=10)`
-4. For 2-5 central pages: `seekstone_get_backlinks(path)`
+3. For each key term: `search_notes(query, limit=10)`
+4. For 2-5 central pages: `search_notes(query="<title>", searchContent=true)` or file I/O grep for `[[<basename>]]`
 5. Adaptively read relevant notes (entities > concepts > decisions > sources)
 6. Synthesize answer with full-path wikilink citations
 7. **File back** — if the answer contains durable knowledge (a comparison, analysis, or connection worth keeping), propose `vault-write` to file it back into the wiki as a new page
