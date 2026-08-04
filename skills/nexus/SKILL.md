@@ -7,7 +7,8 @@ description: >
   "собери контекст", "исследуй перед реализацией", or any task in a tracked
   project workspace. Do NOT use when only vault operations (write/ingest/query/lint) are needed
   without research flow. Requires: onboarding-harness, research-mempalace,
-  research-wiki, research-synthesize, research-brief, research-plan, vault-query.
+  research-wiki, research-synthesize, research-brief, research-plan, vault-query,
+  vault-write, vault-lint, vault-index.
 ---
 
 # nexus
@@ -20,8 +21,9 @@ Obsidian wiki — before any implementation plan. It delivers one compact docume
 Контекст block plus a deterministic step-by-step plan — then stops. No code
 unless the user explicitly approves implementation.
 
-**Core principle:** Institutional memory before implementation. On conflict —
-newer record wins (by date).
+**Core principle:** Institutional memory before implementation; every session
+writes its work back — MemPalace gets the full work log (continuous, verbatim),
+the wiki gets curated key knowledge. On conflict — newer record wins (by date).
 
 ## Language Rule
 
@@ -34,23 +36,28 @@ newer record wins (by date).
 ### Pre-flight
 - [ ] Phase 0: Onboarding harness — delegate to `onboarding-harness`
 - [ ] Phase 1: Decompose request — entities, repos
+- [ ] MemPalace checkpoint after Phase 1 — scope → `decisions` [ref]
 
 ### Vault Research — NO code until synthesis
 - [ ] Phase 2a: Parallel research-mempalace + research-wiki (via vault-query)
 - [ ] Phase 2b: research-synthesize — merge, newer-wins, gaps
+- [ ] MemPalace checkpoint after Phase 2b — facts + gaps → `documentation` [ref]
 
 ### Code Exploration — only after Phase 2b
 - [ ] Phase 3: Code exploration guided by vault findings
+- [ ] MemPalace checkpoint after Phase 3 — актуальное состояние → `documentation` [ref]
 
 ### Deliverables
 - [ ] Phase 4: research-brief — compact Контекст block (≤8 bullets, Russian)
 - [ ] Phase 5: research-plan — merged deliverable: Контекст + deterministic plan
+- [ ] MemPalace checkpoint after Phase 5 — plan decisions → `decisions` [ref]
 - [ ] Phase 6: Handoff — wait for user approval before coding
 
 ### Post-delivery
 - [ ] Phase 7: Wiki capture if significant new knowledge
   - Delegate to `vault-write` (direct wiki write, no raw staging) with user approval
   - For manual external dumps only: `vault-ingest`
+- [ ] MemPalace checkpoint after Phase 7 — final decisions + session close → `decisions` + diary [ref]
 
 ## Phase Details
 
@@ -67,6 +74,7 @@ newer record wins (by date).
 Load when needed:
 - Read [references/subagent-prompts.md] **before dispatching Phase 2a sub-agents** — prompt templates for parallel vault research (A+B only)
 - Read [references/code-exploration-prompt.md] **before Phase 3** — prompt for code exploration subagent
+- Read [references/mempalace-logging.md] **before first checkpoint** — continuous session log contract
 
 ### Phase 2a — Vault Research (parallel)
 
@@ -112,6 +120,13 @@ no raw staging) with user approval. Skip for routine bugfixes with no new
 decisions. `vault-ingest` is reserved for manual/external source drops — it
 is never chained after `vault-write`.
 
+### MemPalace Logging (throughout)
+
+After each checkpoint phase (1, 2b, 3, 5, 7), call `mempalace_checkpoint` —
+decisions → `decisions` room, findings → `documentation` room, one diary entry
+per checkpoint. MemPalace is the full work log; the wiki stays curated-only.
+See [references/mempalace-logging.md].
+
 ## Pre-delivery Validation
 
 - [ ] Harness check completed
@@ -123,12 +138,14 @@ is never chained after `vault-write`.
 - [ ] No implementation code (unless user approved)
 - [ ] Plan is in user's language; Контекст is Russian
 - [ ] Phase 7 noted — scheduled or skipped with reason
+- [ ] Every checkpoint phase (1, 2b, 3, 5, 7) logged to MemPalace
 
 ## Gotchas
 
 - Runtime ports, credentials, docker: palace manifest only — not markdown
 - Wiki track is mandatory even if user says skip; record gap if vault empty
 - Older record does not win — newer date wins (equal/missing dates → ask user)
+- Never batch two checkpoint phases into one — a mid-session crash loses un-logged work
 
 ## Anti-patterns
 
@@ -139,6 +156,7 @@ is never chained after `vault-write`.
 | "User said skip wiki" | Wiki is mandatory; record gap if empty |
 | "I'll write migration now" | Plan first |
 | "Need to show what I found" | User wants the plan, not the findings — emit compact Контекст + steps only |
+| "Too small to log" | Every phase accrues decisions — checkpoint it, verbatim |
 
 ## Quick Reference
 
@@ -153,3 +171,4 @@ is never chained after `vault-write`.
 | 5 | Plan | `research-plan` (merged Контекст + steps) |
 | 6 | Handoff | self |
 | 7 | Wiki capture | `vault-write` (direct), or `vault-ingest` for manual raw drops |
+| CP | MemPalace checkpoint (after 1, 2b, 3, 5, 7) | `mempalace_checkpoint` (self) |
