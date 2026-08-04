@@ -75,17 +75,18 @@ Symmetric remediation (auto-fix both directions) reduces friction while enforcin
 **Примеры:**
 ```markdown
 ## Raw Sources
-- ⏳ pending [[raw/12.07.2026/discovery-session]]       ← OK, ждёт ingest
-- ✅ [[library/MLOps/Concepts/prometheus-setup]]       ← OK, после ingest заменили ⏳-линию
-- ❌ [[raw/notes.md]] без префикса                     ← INVALID
-- ❌ ✅ ingested [[raw/12.07.2026/foo]]                ← INVALID, raw-links never ✅
+- ⏳ pending [[raw/12.07.2026/discovery-session]]         ← OK, ждёт ingest
+- ingested → [[library/MLOps/Concepts/prometheus-setup]]  ← OK, после ingest: wiki-only
+- ❌ [[raw/notes.md]] без префикса                        ← INVALID
+- ❌ ✅ ingested [[raw/12.07.2026/foo]]                   ← INVALID, raw-links never ✅
+- ❌ ✅ ingested [[raw/12.07.2026/foo]] → [[projects/...]] ← INVALID, no raw allowed even with arrow
 ```
 
 **Enforcement:** 🟡 Soft gate (auto-fix + audit)
 - vault-write **отклонит** draft содержащий wikilink на `raw/` — raw — не ссылочный формат для wiki
 - vault-index при обновлении Raw Sources:
   - Новая `raw/`-ссылка без префикса → автоматически добавить `⏳ pending`
-  - После `vault-ingest`: удалить ⏳-линию, добавить `✅` **в основные секции** (Entities/Concepts/Decisions/...)
+  - После `vault-ingest`: **удалить** ⏳-линию целиком; в нужные секции (Entities / Concepts / Decisions / Tasks / Topics) добавить `✅`-free строки `- ingested → [[projects/<p>/...]], [[projects/<p>/...]]`. Raw-ссылки исчезают из wiki после ingest.
 - vault-lint:
   - Сканирует все `00_Index.md`, репортит строки без префикса как `[ERROR]`
   - Сканирует все wiki-страницы на ссылку `[[raw/` вне секции Raw Sources → `[ERROR] Page references raw: <path>`
