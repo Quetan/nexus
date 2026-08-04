@@ -16,8 +16,9 @@ description: >
 
 Tasks fail when agents guess schema, ports, or prior decisions from code or stale
 markdown. This skill forces institutional memory lookup — MemPalace drawers and
-Obsidian wiki — before any implementation plan. It delivers a research brief and
-checklist plan, then stops. No code unless the user explicitly approves implementation.
+Obsidian wiki — before any implementation plan. It delivers one compact document — a short
+Контекст block plus a deterministic step-by-step plan — then stops. No code
+unless the user explicitly approves implementation.
 
 **Core principle:** Institutional memory before implementation. On conflict —
 newer record wins (by date).
@@ -42,8 +43,8 @@ newer record wins (by date).
 - [ ] Phase 3: Code exploration guided by vault findings
 
 ### Deliverables
-- [ ] Phase 4: research-brief — Russian, Актуальное состояние
-- [ ] Phase 5: research-plan — steps with file-paths + verify commands
+- [ ] Phase 4: research-brief — compact Контекст block (≤8 bullets, Russian)
+- [ ] Phase 5: research-plan — merged deliverable: Контекст + deterministic plan
 - [ ] Phase 6: Handoff — wait for user approval before coding
 
 ### Post-delivery
@@ -86,15 +87,19 @@ Delegate to `research-synthesize`:
 ### Phase 3 — Code Exploration
 
 Guided by vault findings. Read key files (controllers, migrations, configs, routes).
-Output notes for Актуальное состояние.
+Output notes for the Контекст block.
 
-### Phase 4 — Research Brief
+### Phase 4 — Research Brief (compact context)
 
-Delegate to `research-brief`. Deliver in Russian.
+Delegate to `research-brief`. Produces a Контекст block in Russian: max 8 bullets,
+only facts that affect the plan. No findings narrative, no gaps/conflicts prose.
 
-### Phase 5 — Implementation Plan
+### Phase 5 — Implementation Plan (single merged deliverable)
 
-Delegate to `research-plan`. Deliver in user's language.
+Delegate to `research-plan`. Emits ONE user-facing document: the Контекст block
+(≤8 bullets) followed by deterministic steps (file-path + command + verification)
+and an optional Блокеры section. Phases are internal; this plan is the only output
+the user sees.
 
 ### Phase 6 — Handoff
 
@@ -112,11 +117,11 @@ is never chained after `vault-write`.
 - [ ] Harness check completed
 - [ ] Vault research completed before code (except peek)
 - [ ] Both palace and wiki tracks ran
-- [ ] Every fact has source (drawer id or wikilink)
-- [ ] Gaps section exists
-- [ ] Актуальное состояние section exists
+- [ ] Контекст ≤ 8 bullets, every bullet cites a source (drawer id or wikilink)
+- [ ] Every plan step has file-path + command + verification
+- [ ] No findings narrative, no gaps/conflicts prose (only Блокеры if blocking)
 - [ ] No implementation code (unless user approved)
-- [ ] Brief is Russian; plan matches user language
+- [ ] Plan is in user's language; Контекст is Russian
 - [ ] Phase 7 noted — scheduled or skipped with reason
 
 ## Gotchas
@@ -132,8 +137,8 @@ is never chained after `vault-write`.
 | "I know the schema" | Palace and wiki first |
 | "Faster to grep code" | Code after vault synthesis |
 | "User said skip wiki" | Wiki is mandatory; record gap if empty |
-| "I'll write migration now" | Brief + plan first |
-| "Too small for brief+plan" | Still deliver both; use the full workflow |
+| "I'll write migration now" | Plan first |
+| "Need to show what I found" | User wants the plan, not the findings — emit compact Контекст + steps only |
 
 ## Quick Reference
 
@@ -144,7 +149,7 @@ is never chained after `vault-write`.
 | 2a | Vault research | `research-mempalace` + `research-wiki` |
 | 2b | Synthesize | `research-synthesize` |
 | 3 | Code | self |
-| 4 | Brief | `research-brief` |
-| 5 | Plan | `research-plan` |
+| 4 | Brief | `research-brief` (compact Контекст) |
+| 5 | Plan | `research-plan` (merged Контекст + steps) |
 | 6 | Handoff | self |
 | 7 | Wiki capture | `vault-write` (direct), or `vault-ingest` for manual raw drops |

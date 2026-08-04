@@ -1,19 +1,19 @@
 ---
 name: research-brief
 description: >
-  Use when generating a structured Research Brief in Russian after vault and code
+  Use when generating a compact Контекст block in Russian after vault and code
   exploration are complete — even for small or obvious tasks. Called by nexus
   during Phase 4. Standalone use: when you have research findings and need a
-  formatted brief document. Requires completed vault synthesis (research-synthesize)
-  and code exploration.
+  terse current-state block. Requires completed vault synthesis
+  (research-synthesize) and code exploration.
 ---
 
 # research-brief
 
 ## What it does
 
-Format research findings into a structured Research Brief in Russian, including
-Актуальное состояние (current state) section with schema, endpoints, config, code.
+Reduce research findings to a compact Контекст block: only facts that affect the
+implementation plan. No narrative, no "what was found / not found".
 
 ## Input
 
@@ -21,41 +21,26 @@ Format research findings into a structured Research Brief in Russian, including
 - Code exploration findings (schema, endpoints, configs, key files)
 - Task description
 
-## Template
+## Output contract
 
 ```markdown
-## Research Brief
-
-**Задача:** <одна строка>
-
-### Контекст
-- <факт> — источник: palace drawer `<id>` / wiki `[[path]]`
-
-### Актуальное состояние
-- **Схема БД:** (таблицы, ключи, nullable, индексы)
-- **Endpoints:** (роуты, методы, middleware)
-- **Конфиги:** (env vars, порты)
-- **Код:** (ключевые файлы и их роль)
-- **Зависимости:** (что ещё нужно изменить)
-
-### Принятые решения
-- <решение> — источник: ...
-
-### Пробелы (не найдено)
-- <тема поиска, записи нет>
-
-### Конфликты
-- <если есть, с указанием какая запись новее>
+### Контекст (максимум 8 буллетов — только то, что влияет на план)
+- Схема: <1 строка> — источник: drawer <id> / [[wikilink]]
+- Endpoints: <1 строка>
+- Конфиги: <1 строка>
+- Решения/факты: <1 буллет каждый>
 ```
 
 ## Constraints
 
 - Language: **Russian**
-- Every fact must cite a source (drawer ID or wikilink)
-- Gaps section is mandatory even if empty
-- Conflicts section is mandatory even if empty
+- Hard cap: 8 bullets. Merge related facts to stay under it.
+- Each bullet cites one source (drawer ID or wikilink), no exception.
+- A gap or conflict is included ONLY if it blocks a plan step — otherwise omit.
+- Never narrate searches, near-misses, or "не найдено" entries.
+- Do not add sections, headings, or prose beyond the block.
 
 ## Gotchas
 
-- Brief must be in Russian even if the conversation was in English
-- Актуальное состояние section is mandatory — even if all fields are "not found"
+- Bullet count wins over completeness — a plan that is missing an unused fact is fine.
+- Brief must be in Russian even if the conversation was in English.

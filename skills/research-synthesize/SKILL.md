@@ -12,7 +12,8 @@ description: >
 ## What it does
 
 Merge findings from MemPalace and Wiki into a single coherent context.
-Deduplicate overlapping facts, resolve conflicts by date, list remaining gaps.
+Deduplicate overlapping facts, resolve conflicts by date, keep only facts the
+implementation plan needs.
 
 ## Input
 
@@ -27,25 +28,26 @@ Deduplicate overlapping facts, resolve conflicts by date, list remaining gaps.
    - Compare dates (frontmatter `date`, `valid_from`, drawer timestamp)
    - **Newer record wins**
    - If dates equal or both missing → flag for user
-4. **Gap analysis** — list topics searched in either source with no record
+4. **Plan-relevance filter** — drop facts that do not affect implementation
+   (schema, endpoints, configs, decisions). Keep only what the plan needs.
 5. **Priority ordering** — sort by relevance to task scope
 
-## Output
+## Output — facts for the plan only
 
 ```markdown
-### Synthesized Context
+### Факты для плана
 - <fact> — source: palace drawer `<id>` / wiki `[[path]]`
-
-### Conflicts
-- <claim A> (date: YYYY-MM-DD) vs <claim B> (date: YYYY-MM-DD) — newer: ...
-
-### Gaps
-- <topic> — not found in palace or wiki
 ```
+
+- Hard cap: **15 bullets**. Merge related facts to stay under it.
+- Gaps and conflicts are surfaced ONLY when they block a plan step — otherwise
+  omit. If one blocks, emit it as a single bullet ending with `— БЛОКЕР`.
+- Never narrate what was searched or missing.
 
 ## Constraints
 
 - Never silently pick a winner when dates are equal — always flag for user
+  (as a БЛОКЕР bullet).
 - Do not blend or interpolate conflicting facts
 - Preserve source traceability for every claim
 - **Cross-source conflict resolution:** MemPalace and Wiki are external memories;

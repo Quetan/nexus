@@ -56,6 +56,7 @@ divergence that needs human judgment.
 - If vault has no record for a topic → say so explicitly.
 - Propose `vault-write` only when accumulating durable knowledge.
 - **When called from nexus workflow:** defer file-back proposal to Phase 7 (wiki capture happens post-plan, with user approval)
+- **When called from nexus workflow:** read only the sections a plan needs (schema, endpoints, configs, decisions) — skip historical/context sections
 
 ## Gotchas
 

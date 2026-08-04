@@ -17,5 +17,10 @@ Explore the codebase for:
 3. Configs (env vars, ports)
 4. Key files (controllers, migrations, routes)
 
+Return contract:
+- Plain bullet list, MAX 15 bullets, one fact per bullet.
+- Only facts that affect the implementation plan (schema, endpoints, configs, key files).
+- No prose, no narration, no "not found" entries unless they block a step.
+
 Return: актуальное состояние for the research brief.
 ```

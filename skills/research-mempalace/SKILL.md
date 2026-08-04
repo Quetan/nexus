@@ -34,7 +34,7 @@ and prior work. Returns structured findings with drawer IDs and date stamps.
    - Date stamp (`valid_from`, frontmatter `date`, or drawer timestamp)
    - Content summary
 
-## Output
+## Output — plan-relevant facts only
 
 ```markdown
 ### MemPalace Findings
@@ -42,9 +42,13 @@ and prior work. Returns structured findings with drawer IDs and date stamps.
 - <entity relationship> — KG: `<subject>` → `<predicate>` → `<object>`
 ```
 
+- Hard cap: **10 bullets**. Only facts that affect the implementation plan
+  (schema, endpoints, configs, decisions).
+- No prose, no narration. A "not found" entry only if it blocks a plan step.
+
 ## Constraints
 
-- If a search returns nothing, record it as a gap (don't invent)
+- If a search returns nothing, record it internally as a gap (don't invent)
 - Always return drawer IDs for traceability
 - Never read code or grep files during this phase
 

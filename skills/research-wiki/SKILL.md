@@ -30,7 +30,7 @@ Returns wikilink-cited findings for the research task.
    - Follow backlinks from central pages (`search_notes(query="<title>", searchContent=true)` or file I/O grep for `[[<basename>]]`)
    - Read relevant sections adaptively
 
-## Output
+## Output — plan-relevant facts only
 
 ```markdown
 ### Wiki Findings
@@ -38,11 +38,15 @@ Returns wikilink-cited findings for the research task.
 - <decision> — [[projects/<project>/Decisions/<slug>|<Display>]]
 ```
 
+- Hard cap: **10 bullets**. Only facts that affect the implementation plan
+  (schema, endpoints, configs, decisions).
+- No prose, no narration. A "not found" entry only if it blocks a plan step.
+
 ## Constraints
 
 - Vault-only by default. External sources (web, codegraph) only if user explicitly allows.
 - Conflicts found in wiki → pass to `research-synthesize` with both dates.
-- If topic has no record, note it as a gap.
+- If topic has no record, note it internally as a gap.
 
 ## Gotchas
 
