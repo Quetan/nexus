@@ -16,6 +16,12 @@ description: >
 Research the Obsidian LLM Wiki and return structured answers with wikilink
 citations. Medium-depth vault research — not a full research workflow.
 
+## Input
+
+- Single question, OR
+- Batch: `questions[]` (from research-wiki) — processed sequentially within one
+  invocation, one combined structured output (`{status, findings[], gaps[]}`)
+
 ## References
 
 Load when needed:
@@ -28,6 +34,9 @@ Load when needed:
 3. For each key term: `search_notes(query, limit=10)`
 4. For 2-5 central pages: `search_notes(query="<title>", searchContent=true)` or file I/O grep for `[[<basename>]]`
 5. Adaptively read relevant notes (entities > concepts > decisions > sources)
+   - Read at most 5 pages in full
+   - Additional matches: title + first paragraph only
+   - Need more depth? Note it as a gap and ask the user whether to expand budget
 6. Synthesize answer with full-path wikilink citations
 7. **File back** — if the answer contains durable knowledge (a comparison, analysis, or connection worth keeping), propose `vault-write` to file it back into the wiki as a new page
 

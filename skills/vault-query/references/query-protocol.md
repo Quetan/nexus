@@ -7,6 +7,9 @@
 3. For each key term: `search_notes(query, limit=10)`
 4. For 2-5 central pages: `search_notes(query="<title>", searchContent=true)` or file I/O grep for `[[<basename>]]`
 5. Adaptively read relevant notes (entities → concepts → decisions → sources)
+   - Read at most 5 pages in full
+   - Additional matches: title + first paragraph only
+   - Need more depth? Note it as a gap and ask the user whether to expand budget
 6. Synthesize answer with wikilink citations
 
 ## Output Format

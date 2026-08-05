@@ -1,8 +1,9 @@
 ---
 name: onboarding-harness
 description: >
-  Use at the start of any nexus research workflow to verify MCP availability and
-  project manifest — even if the workflow was already run this session. Called
+  Use when starting any nexus research workflow to verify MCP availability and
+  project manifest — even if the workflow was already run this session (a cached
+  result is reused when fresh, see Session Cache). Called
   by nexus during Phase 0. Standalone use: before any multi-step agent workflow
   that depends on MemPalace or mcpvault MCP. Do NOT use for simple single-command
   queries.
@@ -14,6 +15,15 @@ description: >
 
 Verify that required MCP servers are available and the project manifest exists
 in MemPalace. Reports pass/fail status per check.
+
+## Session Cache
+
+If this harness already ran successfully earlier in the same session
+(mempalace ✓, mcpvault ✓, manifest ✓) — reuse the cached result instead of
+re-querying, unless:
+- more than 30 minutes have passed, or
+- the user explicitly asks to re-check, or
+- a subsequent tool call fails with an MCP error (re-verify then)
 
 ## Process
 

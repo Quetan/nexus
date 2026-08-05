@@ -17,12 +17,14 @@ implementation plan needs.
 
 ## Input
 
-- MemPalace findings (drawer IDs + dates)
-- Wiki findings (wikilink citations + dates)
+- MemPalace findings — structured contract `{status, findings[], gaps[]}`
+- Wiki findings — same contract; `source` = `wiki:<path>`
 
 ## Process
 
-1. **Merge** — combine both result sets
+1. **Merge** — combine both `findings[]` arrays directly (no prose parsing).
+   A track with `status: failed` becomes a gap ("source unavailable"), never
+   confused with a legitimate empty result.
 2. **Deduplicate** — remove overlapping facts (same entity, same claim)
 3. **Conflict resolution** — for contradictory claims:
    - Compare dates (frontmatter `date`, `valid_from`, drawer timestamp)
@@ -53,9 +55,6 @@ implementation plan needs.
 - **Cross-source conflict resolution:** MemPalace and Wiki are external memories;
   newer date wins by default (unlike within-wiki conflicts in vault-query, which
   always escalate to user)
-
-**TODO (future):** Subagents should return `{status: success|partial|failed, data: ...}`
-to distinguish crash/timeout from legitimate empty result. Current behavior: both appear as "no data".
 
 ## Gotchas
 

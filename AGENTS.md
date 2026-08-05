@@ -104,6 +104,22 @@ Before each commit:
 - [ ] No duplicate `name` across skills
 - [ ] `nexus` SKILL.md references all 12 sub-skills by name
 - [ ] Each sub-skill description contains exact trigger phrases
+- [ ] Subagent dispatch — one call per research track, not per entity
+- [ ] All reading-budgets have an escape hatch, fixed in the text
+- [ ] Inter-phase exchange uses the structured status contract
+  (`{status, findings[], gaps[]}`)
+
+## Token Budgets
+
+Soft limits; every budget has an escape hatch. Bounds research reads without
+capping depth — need more, ask or record a gap.
+
+| Boundary | Budget | Escape hatch |
+| --- | --- | --- |
+| vault-query reads | ≤5 pages in full; rest title + 1st paragraph | record gap, ask user |
+| code exploration | ≤8 files, ~150 lines each (relevant blocks) | stop, report partial coverage, flag skipped |
+| mempalace kg_query | ≤5 relations per entity | record gap |
+| research findings | ≤10 per track (mempalace/wiki); ≤15 merged | merge related facts |
 
 ## Naming Conventions
 

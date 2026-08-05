@@ -61,13 +61,30 @@ the wiki gets curated key knowledge. On conflict — newer record wins (by date)
 
 ## Phase Details
 
-### Phase 1 — Decompose Request
+Prose only where it adds beyond the Quick Reference table: Phase 1 (tier rules),
+Phase 2a (parallel dispatch), Phase 7 (conditional capture). All other phases are
+fully covered by the table below.
+
+### Phase 1 — Decompose & Classify Request
 
 | Dimension | Output |
 | --- | --- |
 | Entities | services, tables, features, ticket ids |
 | Repos | from project context |
 | Task type | migration, bugfix, feature, cross-service |
+| **Complexity tier** | light / medium / full — see below |
+
+**Tier rules:**
+- **light** — single fact lookup, 1-2 known entities, no schema/endpoint change implied
+  → run ONE research track (whichever the question targets), skip Phase 3, use condensed
+  3-5 line answer with sources instead of full Research Brief template
+- **medium** — typical feature/bugfix touching known entities
+  → both tracks (2a), code exploration under budget (see Phase 3), full Brief + Plan
+- **full** — migration, new architecture, cross-service change, or scope genuinely unclear
+  → full pipeline as today
+
+If unsure which tier applies, default to **medium**. User can always request full
+explicitly ("сделай полное исследование" / "full nexus").
 
 ### References
 
@@ -84,34 +101,6 @@ Dispatch two sub-agents in parallel:
 2. **research-wiki** → **vault-query** — wiki queries
 
 No code exploration during Phase 2a (except 1-2 user-named peek files).
-
-### Phase 2b — Synthesize
-
-Delegate to `research-synthesize`:
-- Deduplicate overlapping facts
-- Flag conflicts — newer date wins
-- List gaps (topics with no record)
-
-### Phase 3 — Code Exploration
-
-Guided by vault findings. Read key files (controllers, migrations, configs, routes).
-Output notes for the Контекст block.
-
-### Phase 4 — Research Brief (compact context)
-
-Delegate to `research-brief`. Produces a Контекст block in Russian: max 8 bullets,
-only facts that affect the plan. No findings narrative, no gaps/conflicts prose.
-
-### Phase 5 — Implementation Plan (single merged deliverable)
-
-Delegate to `research-plan`. Emits ONE user-facing document: the Контекст block
-(≤8 bullets) followed by deterministic steps (file-path + command + verification)
-and an optional Блокеры section. Phases are internal; this plan is the only output
-the user sees.
-
-### Phase 6 — Handoff
-
-Wait for user approval before any coding.
 
 ### Phase 7 — Wiki Capture
 
@@ -131,7 +120,7 @@ See [references/mempalace-logging.md].
 
 - [ ] Harness check completed
 - [ ] Vault research completed before code (except peek)
-- [ ] Both palace and wiki tracks ran
+- [ ] Research track(s) ran per tier (both for medium/full, target track for light)
 - [ ] Контекст ≤ 8 bullets, every bullet cites a source (drawer id or wikilink)
 - [ ] Every plan step has file-path + command + verification
 - [ ] No findings narrative, no gaps/conflicts prose (only Блокеры if blocking)
@@ -157,6 +146,7 @@ See [references/mempalace-logging.md].
 | "I'll write migration now" | Plan first |
 | "Need to show what I found" | User wants the plan, not the findings — emit compact Контекст + steps only |
 | "Too small to log" | Every phase accrues decisions — checkpoint it, verbatim |
+| "Too small for brief+plan" | Tier-appropriate output is still required — light tier uses condensed format, it does not skip sourcing |
 
 ## Quick Reference
 

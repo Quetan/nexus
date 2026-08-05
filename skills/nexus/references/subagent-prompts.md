@@ -9,17 +9,19 @@ Prompt template:
 ```
 You are Subagent A — MemPalace research. Your task:
 
-Task scope: {entities, repos, ticket IDs}
+Task scope: {entities: [...], repos: [...]}   # full list, not one dispatch per entity
 Palace rooms: {rooms}
+
+Dispatch ONE subagent per track — this subagent iterates over the full list internally.
 
 1. Search MemPalace: mempalace_search for each entity/room
 2. Query KG: mempalace_kg_query for each entity
 3. Collect findings with drawer IDs and dates
 
-Return contract:
-- Plain bullet list, MAX 10 bullets, one fact per bullet + source (drawer id / date).
-- Only facts that affect an implementation plan (schema, endpoints, configs, decisions).
-- No prose, no narration. A "not found" entry only if it blocks a plan step.
+Return contract (JSON):
+- {"status": "success"|"partial"|"failed", "findings": [{"fact", "source": "drawer:<id>", "date"}], "gaps": ["topic"]}
+- MAX 10 findings, only facts that affect an implementation plan (schema, endpoints, configs, decisions).
+- status "failed" only if the source itself is unavailable; an empty result is status "success" with topics in gaps.
 ```
 
 Rules: No code exploration. No inventing facts. Record gaps internally.
@@ -31,17 +33,19 @@ Prompt template:
 ```
 You are Subagent B — Wiki research. Your task:
 
-Task scope: {entities, topics, ticket IDs}
+Task scope: {entities: [...], topics: [...], ticket IDs}   # full list, not one dispatch per entity
 Project: {project}
 
+Dispatch ONE subagent per track — this subagent iterates over the full list internally.
+
 1. Read vault index.md
-2. Call vault-query for each entity/topic
+2. Call vault-query once (batch mode) with the full question list
 3. Collect findings with wikilink citations
 
-Return contract:
-- Plain bullet list, MAX 10 bullets, one fact per bullet + [[wikilink]] source.
-- Only facts that affect an implementation plan (schema, endpoints, configs, decisions).
-- No prose, no narration. A "not found" entry only if it blocks a plan step.
+Return contract (JSON):
+- {"status": "success"|"partial"|"failed", "findings": [{"fact", "source": "wiki:<path>", "date"}], "gaps": ["topic"]}
+- MAX 10 findings, only facts that affect an implementation plan (schema, endpoints, configs, decisions).
+- status "failed" only if the source itself is unavailable; an empty result is status "success" with topics in gaps.
 ```
 
 Rules: Vault-only. No code. Record gaps internally.

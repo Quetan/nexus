@@ -53,6 +53,7 @@ research flow — phases are internal, the plan is the result.
 - No prose after Шаги: no status summaries, no "исследование завершено", no handoff
   paragraph. Блокеры is the only optional section.
 - If a gap or conflict does not block a step, it is omitted entirely.
+- Empty Блокеры → single line ("Блокеры: нет"), never an empty table skeleton.
 - Every step has a concrete file-path + command + verification — never a vague
   "fix the migration".
 - Language: Russian or English (match user request; default Russian if unclear).

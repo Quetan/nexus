@@ -16,7 +16,8 @@ and prior work. Returns structured findings with drawer IDs and date stamps.
 
 ## Input
 
-- **Task scope**: entities, repos, ticket IDs
+- **Task scope**: `entities[]` (list) — all entities are processed within a single
+  subagent dispatch, never one dispatch per entity
 - **Rooms**: palace rooms mapped to the project (from manifest)
 
 ## Process
@@ -26,7 +27,9 @@ and prior work. Returns structured findings with drawer IDs and date stamps.
    - Project-specific rooms: from project manifest `searches` section
 2. For each entity/symbol in task scope:
    - `mempalace_search(query=entity, wing=<project>, limit=3)`
-   - `mempalace_kg_query(entity=<entity>)` — get relationships
+   - `mempalace_kg_query(entity=<entity>)` — get relationships (max 5 relations)
+   This loop runs inside one subagent context. Nexus dispatches exactly ONE
+   research-mempalace subagent per task, regardless of scope size.
 3. For architectural/ticket queries:
    - `mempalace_search(query=topic, wing=<project>, room=relevant-room, limit=5)`
 4. Collect all findings with:
@@ -34,26 +37,37 @@ and prior work. Returns structured findings with drawer IDs and date stamps.
    - Date stamp (`valid_from`, frontmatter `date`, or drawer timestamp)
    - Content summary
 
-## Output — plan-relevant facts only
+## Output — structured contract (JSON)
 
-```markdown
-### MemPalace Findings
-- <fact> — drawer: `<id>` (date: YYYY-MM-DD)
-- <entity relationship> — KG: `<subject>` → `<predicate>` → `<object>`
+```json
+{
+  "status": "success" | "partial" | "failed",
+  "findings": [
+    {"fact": "<plan-relevant fact>", "source": "drawer:<id>", "date": "YYYY-MM-DD"}
+  ],
+  "gaps": ["<topic>", "<topic2>"]
+}
 ```
 
-- Hard cap: **10 bullets**. Only facts that affect the implementation plan
+- `status`: success = all entities searched; partial = some searches empty/failed;
+  failed = source unavailable (MCP down). Empty result is NOT `failed` — it is
+  `success` with the topics in `gaps`.
+- Hard cap: **10 findings**. Only facts that affect the implementation plan
   (schema, endpoints, configs, decisions).
 - No prose, no narration. A "not found" entry only if it blocks a plan step.
 
 ## Constraints
 
+- Every entity in scope gets at least one search attempt with the same limit as
+  single-entity mode (`mempalace_search` limit=3) — batching saves setup overhead,
+  not per-entity depth
 - If a search returns nothing, record it internally as a gap (don't invent)
 - Always return drawer IDs for traceability
 - Never read code or grep files during this phase
 
 ## Gotchas
 
+- Never spawn one subagent invocation per entity — batch the full scope into a single dispatch per track
 - Drawer IDs are required for traceability — never omit
 - KG query may return empty for new entities — record as gap, don't assume non-existence
 - Legacy palace rooms may not exist — use manifest rooms only

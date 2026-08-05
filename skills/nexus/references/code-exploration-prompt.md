@@ -17,6 +17,10 @@ Explore the codebase for:
 3. Configs (env vars, ports)
 4. Key files (controllers, migrations, routes)
 
+Budget: read at most 8 files, ~150 lines each in full context. For larger files,
+read only the relevant function/route/migration block. If scope needs more, stop
+and report partial coverage rather than reading everything — flag what was skipped.
+
 Return contract:
 - Plain bullet list, MAX 15 bullets, one fact per bullet.
 - Only facts that affect the implementation plan (schema, endpoints, configs, key files).

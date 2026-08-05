@@ -38,6 +38,8 @@ implementation plan. No narrative, no "what was found / not found".
 - Each bullet cites one source (drawer ID or wikilink), no exception.
 - A gap or conflict is included ONLY if it blocks a plan step — otherwise omit.
 - Never narrate searches, near-misses, or "не найдено" entries.
+- Empty Gaps/Conflicts content → single line ("Пробелы: не обнаружено" /
+  "Конфликты: не обнаружено"), never a full table skeleton.
 - Do not add sections, headings, or prose beyond the block.
 
 ## Gotchas
