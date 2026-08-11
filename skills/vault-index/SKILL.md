@@ -4,8 +4,8 @@ description: >
   Use when updating vault index.md, log.md, or projects/<p>/00_Index.md after
   vault-write or vault-ingest operations. Called automatically by vault-write
   and vault-ingest. Standalone use: when manually fixing index drift or log
-  entries. Requires mcpvault MCP. All paths vault-root-relative — never use
-  the `wiki/` prefix.
+  entries. Requires mcpvault MCP. Wikilinks omit `wiki/` prefix; MCP paths use
+  `wiki/log.md`, `wiki/index.md`, `wiki/projects/<p>/00_Index.md`.
 ---
 
 # vault-index
@@ -13,23 +13,18 @@ description: >
 ## What it does
 
 Maintain the wiki catalog and chronology:
-- Append entries to `log.md`
-- Append entries to `index.md`
-- Append entries to `projects/<project>/00_Index.md`
-- Enforce Raw Sources prefix lifecycle (convention 0.3): ⏳ pending → ✅ wiki link, no raw refs
+- Append entries to `log.md`, `index.md`, `projects/<project>/00_Index.md`
+- Enforce Raw Sources prefix lifecycle (convention 0.3)
 
 ## Process
 
-1. **Update indexes** — append to log.md, index.md, projects/<p>/00_Index.md
+1. **Update indexes** — MCP targets: `wiki/log.md`, `wiki/index.md`,
+   `wiki/projects/<p>/00_Index.md` (never bare `log.md` / `projects/...` at MCP root)
 2. **Raw Sources lifecycle** (convention 0.3):
-   - When a NEW raw file appears (manual user drop or vault-ingest pre-register):
-     auto-add `⏳ pending [[raw/DD.MM.YYYY/<p>/<slug>]]` under `## Raw Sources`
-   - When vault-ingest completes for a given raw file:
-     - Remove the `⏳ pending [[raw/...]]` line entirely
-     - Add `✅`-less wikilinks under appropriate **typed sections** (Entities / Concepts / Decisions / Tasks / Topics) of `00_Index.md`, pointing at the result wiki pages
-     - Optionally keep one summary line under Raw Sources in the form
-       `- ingested → [[projects/<p>/<Bucket>/<name>]], [[projects/<p>/<Bucket>/<other>]]` without prefix emoji, dated
-   - Wiki pages never link to `raw/` — only the ingest-queue section may temporarily do so
+   - New raw file → add `⏳ pending [[raw/DD.MM.YYYY/<p>/<slug>]]` under `## Raw Sources`
+   - After ingest → remove ⏳ line; add wikilinks under typed sections of `00_Index.md`
+   - Optional summary: `- ingested → [[projects/<p>/<Bucket>/<name>]], ...`
+   - Wiki pages never link to `raw/` outside that ingest-queue section
 
 ### log.md entry
 
@@ -39,13 +34,11 @@ Maintain the wiki catalog and chronology:
 ```
 
 Rules:
-- `## [YYYY-MM-DD]` — one heading per time group
-- Tab-indented (`  -`) wikilinks with display aliases
-- Full vault-root-relative paths, no `.md`, no `../`, no `wiki/` prefix
-- Command: `write`, `ingest`, `lint`, `query`
-- **Never** put `[[raw/...]]` links into log.md — link to result wiki pages
-- For `write`: list the created/updated wiki pages
-- For `ingest`: list result wiki pages, optionally mention raw slug in prose (`— из raw/DD.MM.YYYY/<p>/<slug>`)
+- One `## [YYYY-MM-DD]` heading per time group; tab-indented (`  -`) aliased wikilinks
+- Wikilinks: full wiki-semantic paths, no `.md`, no `../`, no `wiki/` prefix
+- MCP write: `wiki/log.md`
+- Commands: `write` / `ingest` / `lint` / `query`
+- Never `[[raw/...]]` in log.md — link result wiki pages only
 
 ### index.md entry
 
@@ -55,13 +48,12 @@ Rules:
 - [[library/<Topic>/Concepts/<concept>|<Display Name>]] — one-line summary
 ```
 
+MCP write: `wiki/index.md`
+
 ### 00_Index.md
 
-Same format as `index.md`, scoped to project. Create the file with
-`# <Project> Index` heading if it doesn't exist. Read existing content before
-append to avoid duplicates.
-
-Structure (typed sections):
+Same format as `index.md`, scoped to project. Create `# <Project> Index` if
+missing. Read before append. MCP path: `wiki/projects/<p>/00_Index.md`.
 
 ```markdown
 # <Project> Index
@@ -87,23 +79,18 @@ Structure (typed sections):
 
 ## Input
 
-- Command: write / ingest / lint / query
-- Description: what was done
-- Page paths: list of created/updated pages with display names
-- Project: project slug
+- Command, description, wiki-semantic page paths + display names, project slug
 - For ingest: list of raw files consumed (to remove ⏳ lines)
 
 ## Constraints
 
-- Append only — never rewrite existing entries (except removing consumed ⏳ lines on ingest)
-- Check for duplicates before appending to indexes
-- Full vault-root-relative paths only (no `.md`, no `../`, no `wiki/` prefix)
-- Never emit `[[raw/...]]` wikilinks outside the `## Raw Sources` section of `00_Index.md`
-- Wikilinks in `## Raw Sources` are the ONLY place raw files may appear; once ingested, that line is replaced by wiki links
+- Append only (except removing consumed ⏳ lines on ingest)
+- Check duplicates before append
+- Wikilinks: wiki-semantic. MCP wiki files: `wiki/...`
+- `[[raw/...]]` only under `## Raw Sources` in `00_Index.md`
 
 ## Gotchas
 
-- Read existing index before append — duplicate detection required
-- Raw Sources links without ⏳/✅ → auto-add ⏳ pending (convention 0.3)
-- After ingest: remove the ⏳ line — do NOT replace it with `✅ [[raw/...]]` (raw refs not allowed in wiki)
-- Full vault-root-relative paths only (no `.md`, no `../`) — relative paths break indexes
+- Read existing index before append
+- Unprefixed Raw Sources links → auto-add ⏳ pending
+- After ingest: delete ⏳ line — do not replace with `✅ [[raw/...]]`

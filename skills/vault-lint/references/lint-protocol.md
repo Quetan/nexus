@@ -1,8 +1,7 @@
 # Lint Protocol — Wiki Health Check
 
-Read this file when running health checks. All paths are vault-root-relative
-— `projects/`, `library/`, `index.md`, `log.md`. Never prefix wikilinks or
-grep patterns with `wiki/` — vault root IS what was formerly `wiki/`.
+Wikilinks/Dataview: wiki-semantic (`projects/`, `library/`, …). MCP explicit
+paths: `wiki/...`. File I/O: under `wiki/`.
 
 ## Checks
 
@@ -28,13 +27,12 @@ grep patterns with `wiki/` — vault root IS what was formerly `wiki/`.
 - Compare actual page files with index entries
 
 ### Broken Wikilinks
-- `[[links]]` that don't resolve to existing vault files
-- Scan all `.md` files for wikilinks, verify targets exist
-- Wikilinks must be vault-root-relative — no `wiki/` prefix, no `../`
+- `[[links]]` that don't resolve to existing vault files under `wiki/`
+- Wikilinks must be wiki-semantic — no `wiki/` prefix, no `../`
 
 ### Raw Refs in Wiki (Convention 0.3, body part)
 - Wiki pages never reference `raw/` files in body, Related, or Sources sections
-- Scan all `.md` under vault root **excluding** lines inside `## Raw Sources` sections of `00_Index.md` files
+- Scan all `.md` under wiki root **excluding** lines inside `## Raw Sources` sections of `00_Index.md` files
 - For each match of `[[raw/...]]` outside that context:
   - `[ERROR] Page references raw: <path> line <n>`
 - Severity: ERROR
@@ -50,9 +48,14 @@ grep patterns with `wiki/` — vault root IS what was formerly `wiki/`.
 - Severity: ERROR
 
 ### Stale `wiki/` Prefix
-- Wikilinks must be vault-root-relative — `[[projects/...]]` not `[[wiki/projects/...]]`
-- Scan all `.md` files for `[[wiki/` and for markdown links of form `](wiki/`
-- Each match → `[ERROR] Stale wiki/ prefix in link: <path> line <n>`
+- Content wikilinks: `[[projects/...]]` not `[[wiki/projects/...]]` (MCP args may use `wiki/`)
+- Scan `.md` for `[[wiki/` and `](wiki/` → `[ERROR] Stale wiki/ prefix in link: <path> line <n>`
+- Severity: ERROR
+
+### Misplaced repo-root projects/ (path sanity)
+- If `list_directory("projects")` finds paths outside `wiki/projects/`:
+  - `[ERROR] Misplaced pages outside wiki/: projects/...`
+- Fix: rewrite under `wiki/projects/...`, delete orphan
 - Severity: ERROR
 
 ### Archived Page Path (Convention 0.4)
@@ -99,6 +102,7 @@ grep patterns with `wiki/` — vault root IS what was formerly `wiki/`.
 - Raw refs in wiki: <N> — PASS/WARN/FAIL
 - Raw Sources prefix: <N> — PASS/WARN/FAIL
 - Stale `wiki/` prefix: <N> — PASS/WARN/FAIL
+- Misplaced repo-root projects/: <N> — PASS/WARN/FAIL
 - Archived page path: <N> — PASS/WARN/FAIL
 - Missing hubs: <N> — PASS/WARN/FAIL
 - Dataview coverage: <N> — PASS/WARN/FAIL
@@ -109,7 +113,7 @@ grep patterns with `wiki/` — vault root IS what was formerly `wiki/`.
 
 ## Log Update
 
-Append entry to `log.md` using vault-root-relative wikilinks:
+Append entry to `wiki/log.md` (MCP) using wiki-semantic wikilinks:
 
 ```
 ## [YYYY-MM-DD] HH:MM — lint — <summary>

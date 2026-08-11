@@ -108,28 +108,13 @@ There is NO `type: source` template — sources no longer land in `wiki/` direct
 
 ## Path Mapping
 
-Vault root = `wiki/` directory inside the obsidian-vault repo. All wikilinks
-are **vault-root-relative** — **never** use a `wiki/` prefix.
-
-`project` field value → vault path:
-- Any project slug `<s>` → `projects/<s>/`
+Dual-root details: [mcpvault.md](mcpvault.md). Summary:
+- Wikilinks / drafts: `projects/<s>/...` (no `wiki/` prefix)
+- MCP wiki paths: `wiki/projects/<s>/...`
 - `library/<topic>` → `library/<Topic>/`
 
-**Examples:** `surgut` → `projects/surgut/Entities/cc-api-sng`, `MLOps` → `library/MLOps/Concepts/prometheus-setup`
-
-**Wikilink format (in content):**
+**Wikilink examples:**
 - ✓ `[[projects/surgut/Entities/cc-api-sng]]`
 - ✓ `[[library/MLOps/Concepts/prometheus-setup]]`
-- ✓ `[[library/00_Index|Library]]`
-- ✗ `[[wiki/projects/surgut/Entities/cc-api-sng]]` — never
-- ✗ `[[./projects/surgut/...]]` — no relative `../` or `.` prefixes
-
-**Physical file locations (relative to repo root):**
-- Wiki pages: `wiki/projects/...`, `wiki/library/...`, `wiki/index.md`, `wiki/log.md`
-- Raw staging: `raw/DD.MM.YYYY/<project>/<slug>.md` (managed only by `vault-ingest`)
-
-## General Rules
-- `title`: always quoted, required
-- `date`: always quoted, format per page type
-- `project`: lowercase-dashes slug, required
-- `type`: source/entity/concept/decision/task/index/topic
+- ✗ `[[wiki/projects/...]]` in content
+- ✗ MCP `projects/...` without `wiki/` (repo-root misplace)

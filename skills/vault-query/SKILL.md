@@ -25,47 +25,44 @@ citations. Medium-depth vault research — not a full research workflow.
 ## References
 
 Load when needed:
-- Read [references/query-protocol.md] **if the answer requires structured findings output** — format template and conflict gate
+- [Query protocol](references/query-protocol.md) — structured findings output and conflict gate
 
 ## Process
 
 1. **Resolve project scope** — auto (cwd/git/manifest) or ask if ambiguous
-2. Read vault `index.md` → list candidate pages
+2. Read `wiki/index.md` (MCP) → list candidate pages
 3. For each key term: `search_notes(query, limit=10)`
 4. For 2-5 central pages: `search_notes(query="<title>", searchContent=true)` or file I/O grep for `[[<basename>]]`
 5. Adaptively read relevant notes (entities > concepts > decisions > sources)
-   - Read at most 5 pages in full
-   - Additional matches: title + first paragraph only
-   - Need more depth? Note it as a gap and ask the user whether to expand budget
+   - Explicit MCP paths under `wiki/`; read ≤5 pages in full; else title + first paragraph
+   - Need more depth? Record a gap and ask whether to expand budget
 6. Synthesize answer with full-path wikilink citations
-7. **File back** — if the answer contains durable knowledge (a comparison, analysis, or connection worth keeping), propose `vault-write` to file it back into the wiki as a new page
+7. **File back** — durable knowledge → propose `vault-write`
 
 ## Output
 
-Answer with inline citations:
 ```markdown
 <fact> — [[projects/<project>/Entities/<entity>|<Display>]]
 <fact> — [[projects/<project>/Concepts/<concept>|<Display>]]
 ```
 
-Wikilinks are vault-root-relative — never use the `wiki/` prefix.
+Wikilinks: no `wiki/` prefix. MCP paths: `wiki/...`.
 
 ## Conflict Handling
 
 If two vault sources disagree → show both claims with frontmatter dates and ask
 user. Do not silently pick newer.
 
-**Rationale:** Within-wiki conflicts require manual resolution — the vault is the
-authoritative source, and contradictions indicate either stale content or legitimate
-divergence that needs human judgment.
+**Rationale:** Within-wiki conflicts need manual resolution — the vault is
+authoritative; contradictions mean stale content or legitimate divergence.
 
 ## Constraints
 
 - Vault-only by default. External sources only if user explicitly allows.
 - If vault has no record for a topic → say so explicitly.
 - Propose `vault-write` only when accumulating durable knowledge.
-- **When called from nexus workflow:** defer file-back proposal to Phase 7 (wiki capture happens post-plan, with user approval)
-- **When called from nexus workflow:** read only the sections a plan needs (schema, endpoints, configs, decisions) — skip historical/context sections
+- **When called from nexus workflow:** defer file-back to Phase 7; read only
+  sections a plan needs (schema, endpoints, configs, decisions)
 
 ## Gotchas
 

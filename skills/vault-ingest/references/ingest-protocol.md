@@ -42,9 +42,9 @@ never enters `raw/` — `vault-write` writes directly into `wiki/`.
 
 ## Linking Rules
 
-- Wikilinks vault-root-relative: `[[projects/<p>/Entities/foo]]`
-- Never `[[wiki/projects/...]]` — no `wiki/` prefix
-- Wiki pages never link to `raw/` — raw is staging only
+- Wikilinks: `[[projects/<p>/Entities/foo]]` (no `wiki/` prefix in content)
+- Wiki pages never link to `raw/`
+- MCP: read `raw/...`; write `wiki/projects/...`
 
 ## Cache Format
 

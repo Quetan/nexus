@@ -89,9 +89,9 @@ explicitly ("сделай полное исследование" / "full nexus")
 ### References
 
 Load when needed:
-- Read [references/subagent-prompts.md] **before dispatching Phase 2a sub-agents** — prompt templates for parallel vault research (A+B only)
-- Read [references/code-exploration-prompt.md] **before Phase 3** — prompt for code exploration subagent
-- Read [references/mempalace-logging.md] **before first checkpoint** — continuous session log contract
+- [Subagent prompts](references/subagent-prompts.md) — before Phase 2a dispatch (A+B only)
+- [Code exploration prompt](references/code-exploration-prompt.md) — before Phase 3
+- [MemPalace logging](references/mempalace-logging.md) — before first checkpoint
 
 ### Phase 2a — Vault Research (parallel)
 
@@ -114,7 +114,7 @@ is never chained after `vault-write`.
 After each checkpoint phase (1, 2b, 3, 5, 7), call `mempalace_checkpoint` —
 decisions → `decisions` room, findings → `documentation` room, one diary entry
 per checkpoint. MemPalace is the full work log; the wiki stays curated-only.
-See [references/mempalace-logging.md].
+See [MemPalace logging](references/mempalace-logging.md).
 
 ## Pre-delivery Validation
 

@@ -13,46 +13,66 @@ Use mcpvault MCP tools for all vault operations:
 
 Backlinks: no dedicated tool. Find references via
 `search_notes(query="<title>", searchContent=true)` or file I/O grep for
-`[[<basename>]]` over the vault root.
+`[[<basename>]]` under `wiki/`.
+
+## Dual-root model
+
+mcpvault is bound to the **vault repository root** (siblings: `wiki/`, `raw/`,
+`.llm-wiki/`), not to `wiki/` alone. Obsidian wiki semantics use `wiki/` as
+the content root.
+
+| Layer | Root | Used for | Example |
+|-------|------|----------|---------|
+| MCP / filesystem | vault **repo** | `write_note`, `read_note`, `patch_note`, file I/O | `wiki/projects/surgut/Tasks/foo.md` |
+| Wiki semantic | `wiki/` | wikilinks, Dataview, drafts shown to user | `[[projects/surgut/Tasks/foo]]` |
+
+**Hard rule for MCP tool paths:**
+- Wiki pages → path **must** start with `wiki/`
+- Raw staging → path **must** start with `raw/`
+- Never call `write_note` with bare `projects/...` — that creates files at
+  repo root (`<repo>/projects/...`) instead of `<repo>/wiki/projects/...`
+
+If onboarding-harness reports MCP mode `wiki-bound` (no top-level `wiki/`
+dir), omit the `wiki/` prefix. Default live mode is `repo-bound`.
 
 ## Vault Path Resolution
 
-mcpvault is bound to a specific vault at MCP startup. The agent does **not**
-need to know the absolute vault path — all mcpvault paths are relative to the
-vault root, which is `wiki/` inside the obsidian-vault repository.
-
 If the vault location must be resolved manually (e.g., file I/O fallback):
-1. **Ask mcpvault** — call `get_vault_stats()`; a successful response means
-   MCP is bound, paths are vault-root-relative
-2. **Default macOS path** — `~/Development/obsidian-vault/wiki/`
+1. **Ask mcpvault** — `get_vault_stats()` + `list_directory("/")`; confirm
+   `wiki` and `raw` appear as top-level dirs (`repo-bound`)
+2. **Default macOS path** — `~/Development/obsidian-vault/` (repo);
+   wiki content under `wiki/`
 3. **Ask user** — if neither works
 
-Never hardcode `/srv/cloud/obsidian` (Linux-legacy) anywhere.
+Do not use `/srv/cloud/obsidian` as a **Mac file I/O fallback** (remote host
+path). The live remote mcpvault server may still bind there — that is fine;
+clients talk over MCP, not local paths.
 
 ## Fallback (mcpvault unavailable)
 
-Use file I/O against the resolved vault root:
-- `read <vault-root>/projects/<p>/Entities/foo.md` — read files
-- `write <vault-root>/projects/<p>/Entities/foo.md` — write files
-- `glob <vault-root>/**/*.md` — list pages
+Use absolute file I/O against the Mac clone:
+- `read ~/Development/obsidian-vault/wiki/projects/<p>/Entities/foo.md`
+- `write ~/Development/obsidian-vault/wiki/projects/<p>/Entities/foo.md`
+- `glob ~/Development/obsidian-vault/wiki/**/*.md`
+
+Never write cwd-relative `projects/...` (lands in the wrong repo).
 
 Note in output: "mcpvault unavailable — using file I/O fallback"
 
-## Vault Path Convention
+## Path table
 
-All wikilinks and mcpvault paths are **vault-root-relative**, with `wiki/` as
-the vault root. Paths **never** start with `wiki/`.
-
-| Scope | Vault-root-relative path | Physical repo path |
-|-------|--------------------------|---------------------|
+| Scope | Wikilink / draft path | MCP / filesystem path |
+|-------|----------------------|------------------------|
 | Global index | `index.md` | `wiki/index.md` |
 | Log | `log.md` | `wiki/log.md` |
 | Project index | `projects/<p>/00_Index.md` | `wiki/projects/<p>/00_Index.md` |
-| Project Entity | `projects/<p>/Entities/<name>.md` | `wiki/projects/<p>/Entities/<name>.md` |
-| Project Concept | `projects/<p>/Concepts/<name>.md` | `wiki/projects/<p>/Concepts/<name>.md` |
-| Project Decision | `projects/<p>/Decisions/<slug-DD-MM-YYYY>.md` | `wiki/projects/<p>/Decisions/<slug-DD-MM-YYYY>.md` |
-| Project Task | `projects/<p>/Tasks/<slug-DD-MM-YYYY>.md` | `wiki/projects/<p>/Tasks/<slug-DD-MM-YYYY>.md` |
+| Project Entity | `projects/<p>/Entities/<name>` | `wiki/projects/<p>/Entities/<name>.md` |
+| Project Concept | `projects/<p>/Concepts/<name>` | `wiki/projects/<p>/Concepts/<name>.md` |
+| Project Decision | `projects/<p>/Decisions/<slug-DD-MM-YYYY>` | `wiki/projects/<p>/Decisions/<slug-DD-MM-YYYY>.md` |
+| Project Task | `projects/<p>/Tasks/<slug-DD-MM-YYYY>` | `wiki/projects/<p>/Tasks/<slug-DD-MM-YYYY>.md` |
+| Raw source | (not a wikilink in wiki body) | `raw/DD.MM.YYYY/<p>/<slug>.md` |
 
-`<project>` mapping: `surgut` → `projects/surgut/`, `infrastructure` → `projects/infrastructure/`, `library/<topic>` → `projects/library/<Topic>/`.
+`<project>` mapping: `surgut` → `projects/surgut/`, `infrastructure` →
+`projects/infrastructure/`, `library/<topic>` → `library/<Topic>/`.
 
-Wikilinks: vault-root-relative, no `.md`, no `wiki/` prefix.
+Wikilinks in page content: wiki-semantic, no `.md`, no `wiki/` prefix.

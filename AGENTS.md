@@ -6,7 +6,7 @@ Refactor `surgut-research` and `obsidian-task-note` into a modular atomic skill 
 
 **Goal:** Replace two monolithic skills (~565 combined lines) with 12 atomic single-purpose skills in one repo. Each skill follows the Agent Skills spec (agentskills.io), is <200 lines, uses JIT-loaded references for token economy.
 
-**Current lifecycle state (2026-08):** vault-write performs direct wiki ingest (no raw staging for session work). vault-ingest is reserved for manual/external raw/ drops. All wikilinks are vault-root-relative — `wiki/` is the vault root, never used as a prefix.
+**Current lifecycle state (2026-08):** vault-write performs direct wiki ingest (no raw staging for session work). vault-ingest is reserved for manual/external raw/ drops. Wikilinks are wiki-semantic (`[[projects/...]]`, never `[[wiki/...]]`). mcpvault is bound to the vault **repo** root, so MCP tool paths for wiki pages use the `wiki/` prefix.
 
 ## Architecture Decisions (from Q&A)
 
@@ -20,8 +20,9 @@ Refactor `surgut-research` and `obsidian-task-note` into a modular atomic skill 
 | Project resolution | Auto-then-ask: git/cwd first, ask if ambiguous |
 | Session capture path | Direct `vault-write` → `wiki/` (no `raw/` stage) |
 | Manual source path | `raw/` → `vault-ingest` → `wiki/` |
-| Wikilink format | Vault-root-relative: `[[projects/<p>/Entities/foo]]`, never `[[wiki/...]]` |
-| Vault location | Resolved via mcpvault MCP; fallback `~/Development/obsidian-vault/wiki/` |
+| Wikilink format | Wiki-semantic: `[[projects/<p>/Entities/foo]]`, never `[[wiki/...]]` |
+| Vault location | mcpvault MCP (repo root); file I/O fallback `~/Development/obsidian-vault/wiki/` |
+| MCP wiki paths | `wiki/projects/...` (repo-bound); never bare `projects/` via `write_note` |
 
 ## Repo Structure
 
@@ -149,19 +150,22 @@ capping depth — need more, ask or record a gap.
 
 **Backward compatibility:** Правила применяются к новым страницам. Существующие нарушения репортятся как `[LEGACY]`.
 
-## Vault State (canonical, 2026-08-03)
+## Vault State (canonical, 2026-08-11)
 
 | Item | Value |
 |------|-------|
-| Vault repo | `~/Development/obsidian-vault/` (macOS) |
-| Vault root (used by all wikilinks & its paths) | `wiki/` inside that repo |
+| Vault repo | `~/Development/obsidian-vault/` (macOS clone) |
+| mcpvault filesystem root | Vault **repo** root (live remote: `/srv/cloud/obsidian`; siblings `wiki/`, `raw/`) |
+| Wiki semantic root | `wiki/` — wikilinks, Dataview, draft paths |
+| MCP path for wiki pages | `wiki/projects/...`, `wiki/index.md`, `wiki/log.md` |
 | Raw staging | `raw/DD.MM.YYYY/<project>/<slug>.md` next to `wiki/` |
-| Legacy Linux path | `/srv/cloud/obsidian` — DEPRECATED, do not reference |
-| Session capture flow | `vault-write` → `wiki/<...>` (no `raw/` step) |
-| Manual raw ingest flow | `raw/` → `vault-ingest` → `wiki/` |
+| Mac file I/O fallback | `~/Development/obsidian-vault/wiki/` — do not use `/srv/cloud/obsidian` on Mac |
+| Session capture flow | `vault-write` → MCP `wiki/<...>` (no `raw/` step) |
+| Manual raw ingest flow | `raw/` → `vault-ingest` → MCP `wiki/` |
 | Wikilink format | `[[projects/<p>/<Bucket>/<name>]]` — no `wiki/` prefix, no `.md` |
-| Vault access | mcpvault MCP preferred; file I/O fallback to `~/Development/obsidian-vault/wiki/` |
+| Vault access | mcpvault MCP preferred; file I/O fallback to Mac wiki path above |
 | Known legacy | `wiki/log.md` + some `00_Index.md`s contain historical `[[raw/...]]` wikilinks; treated as `[LEGACY]` by rule 0.3, no mass migration |
+| Path bug (fixed in skills) | Bare MCP `projects/...` wrote to repo root; skills now require `wiki/` prefix |
 
 ## Schema Co-evolution
 

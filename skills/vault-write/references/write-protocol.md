@@ -64,17 +64,25 @@ related: []
 
 ## Save Flow
 
-1. Show vault-relative path + full draft for every page to be written
+1. Show **wiki-semantic** path + full draft for every page
+   (example draft path: `projects/<p>/Tasks/foo-11-08-2026`)
 2. Wait for: `save` / `edit` / `skip`
-3. On `save`:
-   - `write_note` (or file I/O)
-   - Call `vault-index` with: command=`write`, description, list of created pages, project slug
-   - Read back created page to verify
+3. On `save` (MCP mode `repo-bound`, the default):
+   - MCP path = `wiki/` + draft path + `.md`
+     → `write_note(path="wiki/projects/<p>/Tasks/foo-11-08-2026.md", ...)`
+   - **Never** `write_note(path="projects/...")` — creates files at repo root
+   - Call `vault-index` with: command=`write`, description, list of created
+     pages (wiki-semantic paths), project slug
+   - Read back via MCP path `wiki/...` to verify
+   - If the note is missing under `wiki/` or appeared under bare `projects/`
+     at MCP root → treat as failure; delete the misplaced file if present;
+     rewrite with the `wiki/` prefix
 
 ## Anti-patterns
 
 | Don't | Do instead |
 |-------|-----------|
+| `write_note("projects/<p>/...")` (no `wiki/` prefix) | `write_note("wiki/projects/<p>/...")` |
 | Write source-style pages with `type: source` into wiki/ | Pick entity/concept/decision/task/topic |
 | Cross-link from a wiki page to a `[[raw/...]]` file | Mention evidence tags inline; raw stays vault-external |
 | Decompose one capture into 10+ identical small pages | Group by concept; minimum viable granularity |
