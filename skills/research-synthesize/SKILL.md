@@ -1,62 +1,68 @@
 ---
 name: research-synthesize
 description: >
-  Use when merging research findings from multiple sources (MemPalace + Wiki)
-  into a unified context. Called by nexus after Phase 2a parallel research.
-  Standalone use: after collecting data from multiple sources that need
-  deduplication and conflict resolution.
+  Use when merging structured findings from MemPalace and the wiki into unified,
+  plan-relevant context. Called by nexus after Phase 2a. Standalone use: after
+  collecting multiple research sources that need deduplication and conflict
+  handling.
 ---
 
 # research-synthesize
 
-## What it does
-
-Merge findings from MemPalace and Wiki into a single coherent context.
-Deduplicate overlapping facts, resolve conflicts by date, keep only facts the
-implementation plan needs.
-
 ## Input
 
-- MemPalace findings — structured contract `{status, findings[], gaps[]}`
-- Wiki findings — same contract; `source` = `wiki:<path>`
+- MemPalace contract: `{status, findings[], gaps[]}`
+- Wiki contract: `{status, findings[], gaps[]}`
+- Task scope and proposed plan steps, when known
 
 ## Process
 
-1. **Merge** — combine both `findings[]` arrays directly (no prose parsing).
-   A track with `status: failed` becomes a gap ("source unavailable"), never
-   confused with a legitimate empty result.
-2. **Deduplicate** — remove overlapping facts (same entity, same claim)
-3. **Conflict resolution** — for contradictory claims:
-   - Compare dates (frontmatter `date`, `valid_from`, drawer timestamp)
-   - **Newer record wins**
-   - If dates equal or both missing → flag for user
-4. **Plan-relevance filter** — drop facts that do not affect implementation
-   (schema, endpoints, configs, decisions). Keep only what the plan needs.
-5. **Priority ordering** — sort by relevance to task scope
+1. Combine `findings[]` directly; do not parse prose.
+2. Deduplicate claims about the same entity and fact.
+3. Retain only implementation-relevant facts: schema, endpoints, configuration,
+   decisions, and constraints.
+4. Resolve contradictions only across sources (MemPalace versus wiki): normalize
+   dates and retain the newer record.
+5. Never select a winner for two wiki claims. Also preserve both claims when
+   cross-source dates are equal or missing.
+6. Promote an uncertainty to a blocker when a conflicting or missing
+   plan-relevant fact changes implementation choice, scope, or verification. Map it
+   to the affected step; retain all other uncertainty as a gap.
 
-## Output — facts for the plan only
+## Output contract
 
-```markdown
-### Факты для плана
-- <fact> — source: palace drawer `<id>` / wiki `[[path]]`
+```json
+{
+  "status": "success|partial|failed",
+  "findings": [
+    {
+      "fact": "<plan-relevant fact>",
+      "source": "drawer:<id>|wiki:<path>",
+      "date": "YYYY-MM-DD"
+    }
+  ],
+  "gaps": ["<non-blocking gap>"],
+  "blockers": [
+    {
+      "step": "<blocked plan step>",
+      "reason": "<unresolved conflict or required fact>",
+      "claims": [{"fact": "...", "source": "...", "date": "YYYY-MM-DD"}],
+      "question": "<focused requester question>"
+    }
+  ]
+}
 ```
-
-- Hard cap: **15 bullets**. Merge related facts to stay under it.
-- Gaps and conflicts are surfaced ONLY when they block a plan step — otherwise
-  omit. If one blocks, emit it as a single bullet ending with `— БЛОКЕР`.
-- Never narrate what was searched or missing.
 
 ## Constraints
 
-- Never silently pick a winner when dates are equal — always flag for user
-  (as a БЛОКЕР bullet).
-- Do not blend or interpolate conflicting facts
-- Preserve source traceability for every claim
-- **Cross-source conflict resolution:** MemPalace and Wiki are external memories;
-  newer date wins by default (unlike within-wiki conflicts in vault-query, which
-  always escalate to user)
-
-## Gotchas
-
-- Dates may be in different formats (DD.MM.YYYY vs YYYY-MM-DD) — normalize before comparing
-- Equal dates or missing dates → ask user, never silently pick
+- Cap `findings[]` at 15; merge related facts before dropping plan-relevant ones.
+- Preserve source and date traceability for every retained claim.
+- `failed` means both required tracks are unavailable. Propagate `partial` when
+  either track is partial or coverage is materially incomplete. An empty result is
+  `success` with gaps.
+- Every unresolved within-wiki conflict and every equal- or missing-date
+  cross-source conflict that affects implementation requires a `blockers[]` entry
+  with a focused requester question.
+- Never blend conflicting facts, invent a date, or narrate searches.
+- `research-brief` localizes nothing; `research-plan` alone localizes the final
+  requester-facing output.

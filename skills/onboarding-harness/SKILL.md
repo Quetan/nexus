@@ -1,5 +1,6 @@
 ---
 name: onboarding-harness
+compatibility: Requires MemPalace and mcpvault MCPs.
 description: >
   Use when starting any nexus research workflow to verify MCP availability and
   project manifest — even if the workflow was already run this session (a cached
@@ -27,7 +28,7 @@ or a later MCP call fails.
 1. `mempalace_status` — MemPalace available
 2. `get_vault_stats` — mcpvault available
 3. **MCP binding probe** — `list_directory("/")`:
-   - `wiki` + `raw` at top level → **`repo-bound`** (default): wiki MCP paths need `wiki/` prefix
+   - `wiki` at top level → **`repo-bound`** (default): wiki MCP paths need `wiki/` prefix
    - `projects` / `index.md` and no `wiki` dir → **`wiki-bound`**: omit `wiki/` prefix
    - Record `mcp-mode` for the session
 4. Project scope — `mempalace_search(query="ONB manifest", wing=<project>, room="documentation", limit=1)`; fallback git/cwd

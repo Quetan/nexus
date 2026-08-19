@@ -1,48 +1,52 @@
 ---
 name: research-brief
 description: >
-  Use when generating a compact Контекст block in Russian after vault and code
-  exploration are complete — even for small or obvious tasks. Called by nexus
-  during Phase 4. Standalone use: when you have research findings and need a
-  terse current-state block. Requires completed vault synthesis
-  (research-synthesize) and code exploration.
+  Use when generating internal, sourced context after research and optional code
+  exploration are complete. Called by nexus during Phase 4. Standalone use:
+  when structured findings need a terse current-state summary. Requires:
+  research-synthesize.
 ---
 
 # research-brief
 
 ## What it does
 
-Reduce research findings to a compact Контекст block: only facts that affect the
-implementation plan. No narrative, no "what was found / not found".
+Reduce structured research into plan-relevant internal context. Phase 4 never
+emits a user-facing response; `research-plan` localizes the final result once.
 
 ## Input
 
-- Synthesized context from `research-synthesize`
-- Code exploration findings (schema, endpoints, configs, key files)
+- Synthesis contract: `{status, findings[], gaps[]}`
+- Optional code-exploration contract: `{status, findings[], gaps[]}`
 - Task description
+- Complexity tier
 
-## Output contract
+## Internal output contract
 
-```markdown
-### Контекст (максимум 8 буллетов — только то, что влияет на план)
-- Схема: <1 строка> — источник: drawer <id> / [[wikilink]]
-- Endpoints: <1 строка>
-- Конфиги: <1 строка>
-- Решения/факты: <1 буллет каждый>
+```json
+{
+  "status": "success|partial|failed",
+  "context": [
+    {"text": "<plan-relevant current-state fact>", "sources": ["drawer:<id>", "wiki:<path>"]}
+  ],
+  "blockers": [
+    {"step": "<blocked plan step>", "reason": "<unresolved conflict or required fact>", "question": "<requester question>"}
+  ],
+  "gaps": ["<non-blocking gap>"]
+}
 ```
 
 ## Constraints
 
-- Language: **Russian**
-- Hard cap: 8 bullets. Merge related facts to stay under it.
-- Each bullet cites one source (drawer ID or wikilink), no exception.
-- A gap or conflict is included ONLY if it blocks a plan step — otherwise omit.
-- Never narrate searches, near-misses, or "не найдено" entries.
-- Empty Gaps/Conflicts content → single line ("Пробелы: не обнаружено" /
-  "Конфликты: не обнаружено"), never a full table skeleton.
-- Do not add sections, headings, or prose beyond the block.
+- For medium/full, create 2-3 concise context entries. Each must be traceable to
+  one or more sources and affect a plan step.
+- For light, create only the facts needed for a compact 3-5-line final answer.
+- Promote a gap or conflict to `blockers[]` only when it prevents a concrete step.
+  Preserve non-blocking gaps but do not surface them in the final deliverable.
+- Propagate `partial` when coverage is incomplete; use `failed` only when required
+  input is unavailable. Do not invent facts or narrate research activity.
 
 ## Gotchas
 
-- Bullet count wins over completeness — a plan that is missing an unused fact is fine.
-- Brief must be in Russian even if the conversation was in English.
+- Prefer plain language; use technical terminology only when implementation needs it.
+- `research-plan` owns localized labels and user-facing prose.

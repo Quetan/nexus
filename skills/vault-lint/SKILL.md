@@ -1,11 +1,12 @@
 ---
 name: vault-lint
+compatibility: Requires mcpvault MCP.
 description: >
   Use when checking Obsidian LLM Wiki health — orphan detection, staleness,
   contradictions, coverage gaps, index drift, broken wikilinks. Triggers on
   "check wiki health", "lint vault", "wiki health check", "проверь вики".
-  Requires mcpvault MCP. Report only — never creates, edits, or deletes
-  pages. Appends summary to vault log.md.
+  Report only — never creates, edits, or deletes pages. Appends summary to
+  vault log.md.
 ---
 
 # vault-lint
@@ -25,8 +26,7 @@ changes. Appends a summary entry to vault `log.md`.
 | Coverage gaps | Topics mentioned in log but no dedicated page |
 | Index drift | Pages not listed in index.md or project 00_Index.md |
 | Broken wikilinks | `[[links]]` that don't resolve to existing pages |
-| Raw refs in wiki | `[[raw/...]]` outside `## Raw Sources` (convention 0.3) |
-| Raw Sources prefix | Missing ⏳ or `✅` pointing at raw (convention 0.3) |
+| Legacy Wiki Purity | Existing external-staging links, `Raw Sources` headings, or ingest-status markers |
 | Stale `wiki/` prefix | `[[wiki/...]]` in **content** (not MCP tool args) |
 | Misplaced repo-root projects/ | Bare `projects/` at MCP root outside `wiki/` |
 | Archived page path | archived/deprecated outside /archive/ (convention 0.4) |
@@ -56,8 +56,7 @@ Load when needed:
 - Coverage gaps: <N> PASS/WARN/FAIL
 - Index drift: <N> PASS/WARN/FAIL
 - Broken wikilinks: <N> PASS/WARN/FAIL
-- Raw refs in wiki: <N> PASS/WARN/FAIL
-- Raw Sources prefix: <N> PASS/WARN/FAIL
+- Legacy Wiki Purity: <N> PASS/WARN
 - Stale `wiki/` prefix: <N> PASS/WARN/FAIL
 - Misplaced repo-root projects/: <N> PASS/WARN/FAIL
 - Archived page path: <N> PASS/WARN/FAIL
@@ -70,3 +69,5 @@ Load when needed:
 - Report only — never create, edit, or delete pages
 - Only append to `wiki/log.md` (no other writes)
 - If mcpvault is down → report as unable to check
+- Do not turn legacy Wiki Purity findings into failures or propose automatic
+  migrations.

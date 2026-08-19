@@ -17,9 +17,8 @@ Backlinks: no dedicated tool. Find references via
 
 ## Dual-root model
 
-mcpvault is bound to the **vault repository root** (siblings: `wiki/`, `raw/`,
-`.llm-wiki/`), not to `wiki/` alone. Obsidian wiki semantics use `wiki/` as
-the content root.
+mcpvault is bound to the **vault repository root**, not to `wiki/` alone.
+Obsidian wiki semantics use `wiki/` as the content root.
 
 | Layer | Root | Used for | Example |
 |-------|------|----------|---------|
@@ -28,7 +27,6 @@ the content root.
 
 **Hard rule for MCP tool paths:**
 - Wiki pages → path **must** start with `wiki/`
-- Raw staging → path **must** start with `raw/`
 - Never call `write_note` with bare `projects/...` — that creates files at
   repo root (`<repo>/projects/...`) instead of `<repo>/wiki/projects/...`
 
@@ -39,7 +37,7 @@ dir), omit the `wiki/` prefix. Default live mode is `repo-bound`.
 
 If the vault location must be resolved manually (e.g., file I/O fallback):
 1. **Ask mcpvault** — `get_vault_stats()` + `list_directory("/")`; confirm
-   `wiki` and `raw` appear as top-level dirs (`repo-bound`)
+   `wiki` appears as a top-level directory (`repo-bound`)
 2. **Default macOS path** — `~/Development/obsidian-vault/` (repo);
    wiki content under `wiki/`
 3. **Ask user** — if neither works
@@ -70,8 +68,6 @@ Note in output: "mcpvault unavailable — using file I/O fallback"
 | Project Concept | `projects/<p>/Concepts/<name>` | `wiki/projects/<p>/Concepts/<name>.md` |
 | Project Decision | `projects/<p>/Decisions/<slug-DD-MM-YYYY>` | `wiki/projects/<p>/Decisions/<slug-DD-MM-YYYY>.md` |
 | Project Task | `projects/<p>/Tasks/<slug-DD-MM-YYYY>` | `wiki/projects/<p>/Tasks/<slug-DD-MM-YYYY>.md` |
-| Raw source | (not a wikilink in wiki body) | `raw/DD.MM.YYYY/<p>/<slug>.md` |
-
 `<project>` mapping: `surgut` → `projects/surgut/`, `infrastructure` →
 `projects/infrastructure/`, `library/<topic>` → `library/<Topic>/`.
 

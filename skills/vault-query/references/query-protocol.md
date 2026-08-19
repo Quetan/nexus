@@ -12,32 +12,39 @@
    - Need more depth? Note it as a gap and ask the user whether to expand budget
 6. Synthesize answer with wikilink citations
 
-## Output Format
+## Output format
 
-Default: answer immediately (no draft approval for reads).
+For a standalone question, answer immediately in concise requester-locale
+Markdown; read operations do not need draft approval.
 
-Optional structured findings when requested:
+For a batch call from `research-wiki`, return this JSON contract:
 
-```markdown
-### Findings
-- <fact> — [[projects/<project>/Entities/<name>]]
-
-### Prior Decisions
-- <decision> — [[projects/<project>/Decisions/<slug>]]
-
-### Gaps
-- Topic "<topic>" — vault has no record
-
-### Conflicts
-- <claim A> (date) vs <claim B> (date) — awaiting user
+```json
+{
+  "status": "success|partial|failed",
+  "findings": [
+    {"fact": "<plan-relevant fact>", "source": "wiki:<path>", "date": "YYYY-MM-DD"}
+  ],
+  "gaps": ["<topic>"]
+}
 ```
 
-Wikilinks: no `wiki/` prefix in citations. MCP paths: `wiki/...`.
+- Process all `questions[]` in one invocation; batch setup does not reduce
+  per-topic depth.
+- Cap `findings[]` at 10. Use `failed` only when the vault is unavailable and
+  `partial` only when coverage is limited. Empty results are `success` with gaps.
+- Preserve both dated claims for a within-wiki conflict and add a gap requesting
+  requester resolution. Do not emit a selected winner.
+- Wikilinks omit `wiki/`; MCP paths use `wiki/...`.
 
 ## mcpvault Fallback
 
 If mcpvault is down: file I/O under `~/Development/obsidian-vault/wiki/`. Note fallback in output.
 
-## Conflict Gate
+## Source gate and conflict gate
 
 If two vault sources disagree — do not pick a winner. Show both claims with dates and ask the user.
+
+Remain vault-only unless the requester explicitly supplied `allow_external: true`.
+That gate permits supplementary external evidence but never authorizes silently
+resolving a within-wiki conflict.

@@ -1,11 +1,11 @@
 # Write Protocol — Evidence-Gated Direct Wiki Capture
 
-## Project Resolution Order
+## Project Resolution
 
-1. **Explicit** — user names the project
-2. **Session** — already working in a project context
-3. **cwd/git** — current directory or git remote
-4. **Ask** — if ambiguous, ask the user
+1. **Explicit** — the requester names the project.
+2. **Session** — the session already has a project context.
+3. **cwd/git** — infer from the current directory or git remote.
+4. **Ask** — ask the requester if the result is ambiguous.
 
 ## Evidence Rules
 
@@ -32,7 +32,10 @@ Rules:
 - Decision/Task file names include date suffix `DD-MM-YYYY`; Entity/Concept/Topic do not.
 - Concepts get `date:` in frontmatter (auto-add if missing). Topics never carry `date`.
 
-## Draft Format (per page)
+## Draft Format
+
+Use headings and explanatory prose in the requester's language. If it cannot be
+inferred, ask once before drafting.
 
 ```markdown
 ---
@@ -48,13 +51,13 @@ related: []
 
 # <Title>
 
-## Суть
-<1-3 предложения на русском>
+## <Localized summary heading>
+<1–3 requester-localized sentences>
 
-## Детали
+## <Localized details heading>
 <bullets, tables, code blocks as needed>
 
-## Sources
+## <Localized sources heading>
 | Claim | Tag | Evidence |
 |-------|-----|----------|
 | ... | user: | direct user statement |
@@ -64,10 +67,11 @@ related: []
 
 ## Save Flow
 
-1. Show **wiki-semantic** path + full draft for every page
-   (example draft path: `projects/<p>/Tasks/foo-11-08-2026`)
-2. Wait for: `save` / `edit` / `skip`
-3. On `save` (MCP mode `repo-bound`, the default):
+1. Validate the draft against Wiki Purity and archive placement before showing it.
+2. Show the **wiki-semantic** path and full draft for every page
+   (example: `projects/<p>/Tasks/foo-11-08-2026`).
+3. Wait for `save`, `edit`, or `skip`.
+4. On `save` (MCP mode `repo-bound`, the default):
    - MCP path = `wiki/` + draft path + `.md`
      → `write_note(path="wiki/projects/<p>/Tasks/foo-11-08-2026.md", ...)`
    - **Never** `write_note(path="projects/...")` — creates files at repo root
@@ -78,16 +82,22 @@ related: []
      at MCP root → treat as failure; delete the misplaced file if present;
      rewrite with the `wiki/` prefix
 
+## Rejections
+
+Reject any new draft with a `[[raw/...]]` link, a `Raw Sources` heading, or an
+ingest-status marker. Do not rewrite existing pages merely to remove legacy
+artifacts.
+
 ## Anti-patterns
 
 | Don't | Do instead |
 |-------|-----------|
 | `write_note("projects/<p>/...")` (no `wiki/` prefix) | `write_note("wiki/projects/<p>/...")` |
 | Write source-style pages with `type: source` into wiki/ | Pick entity/concept/decision/task/topic |
-| Cross-link from a wiki page to a `[[raw/...]]` file | Mention evidence tags inline; raw stays vault-external |
+| Link a new wiki page to external staging | Preserve provenance in the Sources table |
 | Decompose one capture into 10+ identical small pages | Group by concept; minimum viable granularity |
 
 ## Post-save
 
-- **No `raw/` step.** This skill never writes to `raw/` for session captures.
-- For pre-existing manual notes already in `raw/`, defer to `vault-ingest`.
+- Update indexes only with typed wiki-page links.
+- Do not create source queues, caches, or staging references.

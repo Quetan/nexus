@@ -3,10 +3,11 @@ name: research-wiki
 description: >
   Use when extracting context from Obsidian LLM Wiki for a research task. Called
   by nexus during Phase 2a vault research. Delegates actual wiki queries to
-  vault-query. Requires: vault-query, mcpvault MCP.
+  vault-query. Requires: vault-query.
   Standalone use: when you need to look up project knowledge from the wiki
   without the full research flow. Do NOT use for MemPalace queries (use
   research-mempalace) or code exploration.
+compatibility: mcpvault MCP
 ---
 
 # research-wiki
@@ -20,6 +21,8 @@ Returns wikilink-cited findings for the research task.
 
 - **Task scope**: `entities[]` (list) — all entities are processed within a single
   subagent dispatch, never one dispatch per entity
+- **External-source gate**: `allow_external` is `false` unless the requester
+  explicitly authorizes external sources for this task
 
 ## Process
 
@@ -44,19 +47,21 @@ Returns wikilink-cited findings for the research task.
 }
 ```
 
-- `status`: success = all entities searched; partial = some searches empty/failed;
-  failed = source unavailable (mcpvault down). Empty result is NOT `failed` — it is
-  `success` with the topics in `gaps`.
+- `status`: success = completed coverage; partial = coverage constrained by a
+  failed search or budget; failed = source unavailable (mcpvault down). Empty
+  results are `success` with the topics in `gaps`.
 - Hard cap: **10 findings**. Only facts that affect the implementation plan
   (schema, endpoints, configs, decisions).
 - No prose, no narration. A "not found" entry only if it blocks a plan step.
 
 ## Constraints
 
-- Vault-only by default. External sources (web, codegraph) only if user explicitly allows.
+- Vault-only by default. Use web, codegraph, or other external evidence only when
+  `allow_external: true` was explicitly authorized by the requester.
 - Every entity in scope gets the same per-entity depth as single-entity mode
   (candidate pages from index.md + search) — batching saves setup overhead, not depth.
-- Conflicts found in wiki → pass to `research-synthesize` with both dates.
+- For a within-wiki conflict, return both dated claims in `findings[]` and add a
+  gap that requester resolution is required. Never select a newer winner.
 - If topic has no record, note it internally as a gap.
 
 ## Gotchas

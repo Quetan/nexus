@@ -15,7 +15,7 @@ un-logged work.
 | Room | Content |
 | --- | --- |
 | `decisions` | decomposed scope, assumptions, chosen approach, plan decisions, user approvals, conflict resolutions |
-| `documentation` | research findings, synthesis, gaps, актуальное состояние |
+| `documentation` | research findings, synthesis, gaps, current state |
 | diary entry | running narrative — what happened, what was decided, what's next |
 
 ## Call contract
@@ -46,6 +46,6 @@ mempalace_checkpoint(
 | --- | --- |
 | after 1 | entities, repos, task type, assumptions → `decisions` |
 | after 2b | raw facts from both sub-agents + merged synthesis, gaps, conflict resolutions → `documentation` |
-| after 3 | актуальное состояние (code facts) → `documentation` |
+| after 3 | current state (code facts) → `documentation` |
 | after 5 | chosen approach, plan decisions → `decisions` |
 | after 7 | final decisions, wiki pages written, session close → `decisions` + diary |

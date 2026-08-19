@@ -1,103 +1,92 @@
-# nexus — Atomic Agent Skills for Institutional Memory
+# nexus — Atomic Skills for Institutional Memory
 
-A modular system of atomic agent skills that enforce **institutional memory before implementation**. Built on MemPalace + Obsidian LLM Wiki.
+`nexus` is an eleven-skill system that gathers institutional context before
+implementation and captures approved, durable knowledge in an Obsidian wiki.
+It combines MemPalace with a wiki-backed research flow.
 
 ## Skills
 
-| Skill | Purpose | Lines |
-|-------|---------|-------|
-| `nexus` | Orchestrator — coordinates research flow | ~180 |
-| `research-mempalace` | Extract context from MemPalace | ~60 |
-| `research-wiki` | Extract context from Obsidian wiki | ~60 |
-| `research-synthesize` | Merge sources, conflict resolution | ~60 |
-| `research-brief` | Generate Russian Research Brief | ~80 |
-| `research-plan` | Generate Implementation Plan | ~70 |
-| `vault-write` | Evidence-gated direct wiki capture (typed pages, no raw staging) | ~70 |
-| `vault-ingest` | Manual raw/ → wiki pages | ~70 |
-| `vault-query` | Medium vault research | ~70 |
-| `vault-lint` | Wiki health check | ~80 |
-| `vault-index` | Index/log/00_Index maintenance, Raw Sources lifecycle | ~80 |
-| `onboarding-harness` | MCP + manifest checks | ~50 |
+| Skill | Purpose |
+| --- | --- |
+| `nexus` | Orchestrate research and the final plan |
+| `onboarding-harness` | Verify MCP availability and project context |
+| `research-mempalace` | Extract MemPalace findings |
+| `research-wiki` | Extract wiki findings through `vault-query` |
+| `research-synthesize` | Merge findings and expose material conflicts |
+| `research-brief` | Produce internal plan context |
+| `research-plan` | Emit one requester-localized plan |
+| `vault-query` | Perform focused wiki research |
+| `vault-write` | Curate approved typed wiki pages |
+| `vault-index` | Maintain indexes and the log |
+| `vault-lint` | Report wiki health issues |
 
-## How the vault flow works
+## Research Flow
 
+```mermaid
+graph TD
+  N[nexus] --> O[onboarding-harness]
+  N --> M[research-mempalace]
+  N --> W[research-wiki]
+  W --> Q[vault-query]
+  N --> S[research-synthesize]
+  N --> B[research-brief]
+  N --> P[research-plan]
 ```
-session work ──vault-write──▶ wiki/<typed page>        (direct, no raw/)
-manual drop ──▶ raw/DD.MM.YYYY/<p>/<slug>.md
-                     │
-                     └─vault-ingest──▶ wiki/<typed page>   (manual/legacy flow)
+
+`research-plan` emits the only final user-facing response. It uses the
+requester's locale; instruction prose and inter-skill data remain English.
+Light requests receive concise sourced answers. Medium and full requests
+receive sourced Context, 3–7 steps, and verification.
+
+## Wiki Capture
+
+```text
+session work, pasted material, files, or URLs
+                  │
+                  ▼
+          vault-write (draft + approval)
+                  │
+                  ▼
+        wiki/<typed page> ──▶ vault-index
 ```
 
-- **vault-write** always writes directly into `wiki/`. Never stages in `raw/`.
-- **vault-ingest** consumes only manual/external `raw/` files. Once ingested,
-  the `⏳ pending` line in `00_Index.md` is removed and replaced with
-  ✅ links to the resulting typed wiki pages.
-- **Wiki pages never link to `raw/`.** `raw/` is staging only.
-- All wikilinks are **vault-root-relative** — `[[projects/<p>/<Bucket>/<name>]]`,
-  never `[[wiki/...]]`. `wiki/` is the vault root.
+`vault-write` is the only capture path. It drafts typed Entity, Concept,
+Decision, Task, or Topic pages, records evidence, and writes only after the
+requester approves. New wiki content must pass Wiki Purity: do not add
+external-staging links, source queues, or lifecycle markers. Existing
+historical artifacts remain lint-only `[LEGACY]` findings.
+
+Wikilinks are wiki-semantic (`[[projects/<p>/Entities/<name>]]`); in
+repo-bound mode MCP file paths start with `wiki/`.
 
 ## Install
 
 ```bash
-# Discover all skills
-npx skills add ~/nexus --list
+# Inspect the eleven discoverable skills
+npx skills add /Users/quetan/Development/nexus --list
 
 # Install globally for Claude Code
-npx skills add ~/nexus -g -a claude-code -y
+npx skills add /Users/quetan/Development/nexus -g -a claude-code -y
 
-# Install for Cursor
-npx skills add ~/nexus -g -a cursor -y
+# Install globally for Cursor
+npx skills add /Users/quetan/Development/nexus -g -a cursor -y
 ```
 
 ## Usage
 
-```bash
-# Full research workflow
-/nexus "что там с favorite-dirs?"
-
-# Direct vault operations
-"сохрани результаты сессии"  # → vault-write
-"спроси вики про API"        # → vault-query
-"проверь здоровье вики"      # → vault-lint
-"разложи source по полкам"   # → vault-ingest
-```
-
-## Architecture
-
-```mermaid
-graph TD
-  NEXUS[nexus] --> OH[onboarding-harness]
-  NEXUS --> RM[research-mempalace]
-  NEXUS --> RW[research-wiki]
-  NEXUS --> RS[research-synthesize]
-  NEXUS --> RB[research-brief]
-  NEXUS --> RP[research-plan]
-  RW --> VQ[vault-query]
-  VW[vault-write] --> VX[vault-index]
-  VI[vault-ingest] --> VX
+```text
+/nexus "What does the project record say about favorite-dirs?"
+"Save these approved session results"     # vault-write
+"Ask the wiki about the API"              # vault-query
+"Check wiki health"                       # vault-lint
 ```
 
 ## Requirements
 
-- `mempalace` MCP server (for palace queries)
-- `mcpvault` MCP server bound to an Obsidian vault (for wiki operations)
-- Obsidian vault with LLM Wiki structure (`wiki/` + `raw/` sibling, e.g.
-  `~/Development/obsidian-vault/`)
-- Vault root resolution: via mcpvault probe; file I/O fallback reads
-  `~/Development/obsidian-vault/wiki/`
+- A `mempalace` MCP server for MemPalace research.
+- An `mcpvault` MCP server for wiki operations.
+- An Obsidian vault whose semantic content root is `wiki/`, for example
+  `~/Development/obsidian-vault/wiki/`.
 
-## Origin
-
-Refactored from `surgut-research` + `obsidian-task-note` into a generic,
-project-agnostic atomic skill system. See `docs/superpowers/specs/` for design.
-
-## Current patterns
-
-- **Direct capture:** vault-write integrates into `wiki/` immediately — no
-  `raw/` intermediary. Evidence tags (`user:`, `vault:`, `UNVERIFIED`) still
-  required.
-- **Typed pages:** Session capture produces entity / concept / decision / task
-  / topic pages, not a monolithic "source" dump.
-- **Ingest queue:** `00_Index.md Raw Sources` section lists `⏳ pending` raw
-  files only; once consumed, line is replaced by wiki links under typed
-  sections.
+See the [design specification](docs/superpowers/specs/2026-08-19-nexus-atomic-skills-design.md)
+and [agent contract](AGENTS.md) for the full architecture.

@@ -30,22 +30,14 @@ paths: `wiki/...`. File I/O: under `wiki/`.
 - `[[links]]` that don't resolve to existing vault files under `wiki/`
 - Wikilinks must be wiki-semantic — no `wiki/` prefix, no `../`
 
-### Raw Refs in Wiki (Convention 0.3, body part)
-- Wiki pages never reference `raw/` files in body, Related, or Sources sections
-- Scan all `.md` under wiki root **excluding** lines inside `## Raw Sources` sections of `00_Index.md` files
-- For each match of `[[raw/...]]` outside that context:
-  - `[ERROR] Page references raw: <path> line <n>`
-- Severity: ERROR
-- Fix: remove the wikilink; if evidence needed, cite claim with `user:`/`vault:`/`UNVERIFIED` tag per evidence rules
-
-### Raw Sources Prefix (Convention 0.3, queue part)
-- Every line in the `## Raw Sources` section of `00_Index.md` must start with `⏳ pending` AND point at `raw/`, OR be a summary line of the form `- ingested → [[<wiki-page>]], ...` after the raw has been consumed
-- Scan all `projects/*/00_Index.md` → extract `## Raw Sources` section
-- For each line:
-  - If it links to `raw/` without `⏳ pending` → `[ERROR] Unprefixed Raw Sources entry: <line>`
-  - If it has `✅ ingested` AND links to `raw/` → `[ERROR] 'ingested' marker on raw link: <line> — replace with wiki links`
-  - If it has no emoji prefix at all → `[ERROR] Unprefixed Raw Sources entry: <line>`
-- Severity: ERROR
+### Legacy Wiki Purity (Convention 0.3)
+- Scan all Markdown files under `wiki/` for `[[raw/...]]`, `## Raw Sources`,
+  `⏳ pending`, and `✅ ingested`.
+- Every match is an existing artifact, not a current lifecycle state.
+- Report each match as:
+  `[LEGACY] Wiki Purity: <path> line <n> — <matched artifact>`
+- Severity: WARN. Never report this check as FAIL or ERROR, and do not alter
+  pages to remediate it.
 
 ### Stale `wiki/` Prefix
 - Content wikilinks: `[[projects/...]]` not `[[wiki/projects/...]]` (MCP args may use `wiki/`)
@@ -59,14 +51,14 @@ paths: `wiki/...`. File I/O: under `wiki/`.
 - Severity: ERROR
 
 ### Archived Page Path (Convention 0.4)
-- Страницы с `status: archived | deprecated` физически в `/archive/`
+- Pages with `status: archived | deprecated` must be physically in `archive/`.
 - Find all `.md` files with frontmatter `status: archived` OR `status: deprecated`
 - Verify path contains `archive/` at any level
 - If not → `[FAIL] Misplaced archived page: <path> (status=<status>)`
 - Severity: FAIL
 
 ### Missing Hubs (Convention 0.5)
-- Entities с ≥5 backlinks из Concept-страниц нуждаются в `00_Index.md`
+- Entities with at least five backlinks from Concept pages need `00_Index.md`.
 - Extract all `[[Entity]]` wikilinks from `library/*/Concepts/**/*.md` and `projects/*/Concepts/**/*.md`
 - Count backlinks per Entity (how many different Concept files mention it)
 - For each Entity with ≥5 backlinks:
@@ -78,7 +70,7 @@ paths: `wiki/...`. File I/O: under `wiki/`.
 - Action: Manual hub creation (not automatic)
 
 ### Dataview Coverage (Convention 0.6)
-- Каждый top-level namespace покрыт хотя бы одним dashboard FROM clause
+- Every top-level namespace must be covered by a dashboard `FROM` clause.
 - Discover top-level namespaces:
   ```bash
   ls -d */ | grep -v -E '(.llm-wiki|.obsidian|.git)'
@@ -99,8 +91,7 @@ paths: `wiki/...`. File I/O: under `wiki/`.
 - Coverage gaps: <N> — PASS/WARN/FAIL
 - Index drift: <N> — PASS/WARN/FAIL
 - Broken wikilinks: <N> — PASS/WARN/FAIL
-- Raw refs in wiki: <N> — PASS/WARN/FAIL
-- Raw Sources prefix: <N> — PASS/WARN/FAIL
+- Legacy Wiki Purity: <N> — PASS/WARN
 - Stale `wiki/` prefix: <N> — PASS/WARN/FAIL
 - Misplaced repo-root projects/: <N> — PASS/WARN/FAIL
 - Archived page path: <N> — PASS/WARN/FAIL

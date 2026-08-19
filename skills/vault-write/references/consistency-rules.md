@@ -10,14 +10,12 @@ This is intentional — Entity/Concept/Topic don't use date in filename at all.
 
 | Page type | Format | Example |
 |-----------|--------|---------|
-| Raw staging filename | `DD.MM.YYYY` (directory) | `raw/12.07.2026/surgut/<slug>.md` |
 | Wiki pages (frontmatter) | `YYYY-MM-DD` | `2026-07-12` |
 
 ## File Naming
 
 | Page type | Pattern | Example |
 |-----------|---------|---------|
-| Raw staging source | `<slug>.md` inside `raw/DD.MM.YYYY/<project>/` | `discovery-results.md` |
 | Entity | `<entity-name>.md` | `FavoriteDir.md` |
 | Concept | `<concept-name>.md` | `ServiceMesh.md` |
 | Decision | `<slug-DD-MM-YYYY>.md` | `db-schema-v2-12-07-2026.md` |
@@ -97,7 +95,7 @@ related: []
 ---
 ```
 
-There is NO `type: source` template — sources no longer land in `wiki/` directly.
+There is no `type: source` template. Curate external material into typed pages.
 
 ## General Rules
 - `title`: always quoted, required

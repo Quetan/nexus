@@ -1,11 +1,12 @@
 ---
 name: vault-index
+compatibility: Requires mcpvault MCP.
 description: >
   Use when updating vault index.md, log.md, or projects/<p>/00_Index.md after
-  vault-write or vault-ingest operations. Called automatically by vault-write
-  and vault-ingest. Standalone use: when manually fixing index drift or log
-  entries. Requires mcpvault MCP. Wikilinks omit `wiki/` prefix; MCP paths use
-  `wiki/log.md`, `wiki/index.md`, `wiki/projects/<p>/00_Index.md`.
+  vault-write operations. Called automatically by vault-write. Standalone use:
+  when manually fixing index drift or log entries. Wikilinks omit `wiki/`
+  prefix; MCP paths use `wiki/log.md`, `wiki/index.md`,
+  `wiki/projects/<p>/00_Index.md`.
 ---
 
 # vault-index
@@ -14,17 +15,14 @@ description: >
 
 Maintain the wiki catalog and chronology:
 - Append entries to `log.md`, `index.md`, `projects/<project>/00_Index.md`
-- Enforce Raw Sources prefix lifecycle (convention 0.3)
+- Preserve Wiki Purity in every new index entry
 
 ## Process
 
 1. **Update indexes** — MCP targets: `wiki/log.md`, `wiki/index.md`,
    `wiki/projects/<p>/00_Index.md` (never bare `log.md` / `projects/...` at MCP root)
-2. **Raw Sources lifecycle** (convention 0.3):
-   - New raw file → add `⏳ pending [[raw/DD.MM.YYYY/<p>/<slug>]]` under `## Raw Sources`
-   - After ingest → remove ⏳ line; add wikilinks under typed sections of `00_Index.md`
-   - Optional summary: `- ingested → [[projects/<p>/<Bucket>/<name>]], ...`
-   - Wiki pages never link to `raw/` outside that ingest-queue section
+2. **Classify pages** — append typed wiki-page links under the matching section
+   of `00_Index.md`; never create source queues or lifecycle markers.
 
 ### log.md entry
 
@@ -37,8 +35,8 @@ Rules:
 - One `## [YYYY-MM-DD]` heading per time group; tab-indented (`  -`) aliased wikilinks
 - Wikilinks: full wiki-semantic paths, no `.md`, no `../`, no `wiki/` prefix
 - MCP write: `wiki/log.md`
-- Commands: `write` / `ingest` / `lint` / `query`
-- Never `[[raw/...]]` in log.md — link result wiki pages only
+- Commands: `write` / `lint` / `query`
+- Link only wiki pages in `log.md`
 
 ### index.md entry
 
@@ -73,24 +71,21 @@ missing. Read before append. MCP path: `wiki/projects/<p>/00_Index.md`.
 ## Topics
 - [[projects/<p>/Topics/quuz|Quuz]] — ...
 
-## Raw Sources  ← ingest queue only, ⏳ prefix for pending
-- ⏳ pending [[raw/03.08.2026/<p>/ad-hoc-note|Ad hoc note]]
 ```
 
 ## Input
 
 - Command, description, wiki-semantic page paths + display names, project slug
-- For ingest: list of raw files consumed (to remove ⏳ lines)
 
 ## Constraints
 
-- Append only (except removing consumed ⏳ lines on ingest)
+- Append only
 - Check duplicates before append
 - Wikilinks: wiki-semantic. MCP wiki files: `wiki/...`
-- `[[raw/...]]` only under `## Raw Sources` in `00_Index.md`
+- Reject new index content containing external staging links, `Raw Sources`, or
+  ingest-status markers.
 
 ## Gotchas
 
 - Read existing index before append
-- Unprefixed Raw Sources links → auto-add ⏳ pending
-- After ingest: delete ⏳ line — do not replace with `✅ [[raw/...]]`
+- Existing legacy source-queue content is left unchanged; vault-lint reports it.

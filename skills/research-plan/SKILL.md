@@ -1,60 +1,56 @@
 ---
 name: research-plan
 description: >
-  Use when generating a single merged deliverable — compact Контекст plus a
-  deterministic Implementation Plan — after research is complete, even if the
-  implementation seems straightforward. Called by nexus during Phase 5 (absorbs
-  the research-brief block). Standalone use: when you have research findings and
-  need a structured plan with concrete steps, file paths, commands, and
-  verification for each step.
+  Use when generating the single requester-localized, sourced implementation
+  plan after research is complete. Called by nexus during Phase 5. Standalone
+  use: when internal context needs concise, actionable implementation steps.
+  Requires: research-brief.
 ---
 
 # research-plan
 
 ## What it does
 
-Emit ONE deliverable: a terse Контекст block followed by a deterministic,
-step-by-step implementation plan. This is the only user-facing output of the
-research flow — phases are internal, the plan is the result.
+Emit exactly one user-facing deliverable. Phase 5 owns that emission; do not
+repeat Phase 4 context or expose internal handoffs.
 
 ## Input
 
-- Контекст block from `research-brief`
+- Internal context contract from `research-brief`
 - Task scope (repos, services)
-- User language preference
+- Requester locale (inferred, or requested once if ambiguous)
+- Complexity tier
 
-## Output contract — use exactly, no other sections
+## Output contract
 
 ```markdown
-## План
+## <localized "Plan">
 
-### Контекст (максимум 8 буллетов)
-- Схема: <1 строка> — источник: drawer <id> / [[wikilink]]
-- Endpoints: <1 строка>
-- Конфиги: <1 строка>
-- Решения/факты: <1 буллет каждый>
+### <localized "Context">
 
-### Шаги
-1. `<file-path>` — <1 строка: что меняем>
-   - Команда: `...`
-   - Верификация: `...`
-2. `<file-path>` — <1 строка: что меняем>
-   - Команда: `...`
-   - Верификация: `...`
+<2-3 short sourced paragraphs for medium/full.>
+<localized "Source">: drawer:<id>, [[path]].
 
-### Блокеры (только если пробел/конфликт мешает конкретному шагу)
-- <что мешает> — нужен ответ пользователя: ...
+### <localized "Steps">
+1. `<file-path>` — <one-line action and purpose>.
+
+<localized "Verification">: `<command>` or <short manual check>.
+
+### <localized "Blockers"> (only when present)
+- <blocked step>: <reason>. <localized requester question>
 ```
 
-## Determinism rules
+## Simplicity rules
 
-- A step is exactly three fields: file-path, Команда, Верификация. One line each.
-- Small task → 3-5 steps. No artificial expansion.
-- No prose after Шаги: no status summaries, no "исследование завершено", no handoff
-  paragraph. Блокеры is the only optional section.
-- If a gap or conflict does not block a step, it is omitted entirely.
-- Empty Блокеры → single line ("Блокеры: нет"), never an empty table skeleton.
-- Every step has a concrete file-path + command + verification — never a vague
-  "fix the migration".
-- Language: Russian or English (match user request; default Russian if unclear).
-- No implementation code in this phase.
+- Medium/full: use exactly 2-3 short context paragraphs, each with a localized
+  source label and drawer ID or wikilink. Then give 3-7 one-line steps.
+- Light: omit the standard sections. Emit 3-5 concise sourced lines answering the
+  request, plus a localized blockers section only if action is prevented.
+- State file paths when known; do not invent them or add implementation details
+  merely to fill the format. Use one verification line with only relevant commands.
+- Omit non-blocking gaps and conflicts. Include every `blockers[]` item from the
+  internal context as a localized blocker tied to its step and requester question.
+- Translate all headings, labels, and prose to the requester locale. Keep paths,
+  identifiers, commands, and citations unchanged. If locale remains ambiguous,
+  ask once instead of defaulting to a language.
+- Do not emit implementation code or any content after verification except blockers.

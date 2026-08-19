@@ -22,9 +22,21 @@ read only the relevant function/route/migration block. If scope needs more, stop
 and report partial coverage rather than reading everything — flag what was skipped.
 
 Return contract:
-- Plain bullet list, MAX 15 bullets, one fact per bullet.
-- Only facts that affect the implementation plan (schema, endpoints, configs, key files).
-- No prose, no narration, no "not found" entries unless they block a step.
+```json
+{
+  "status": "success|partial|failed",
+  "findings": [
+    {"fact": "<plan-relevant fact>", "source": "code:<path>:<line-or-symbol>"}
+  ],
+  "gaps": ["<skipped coverage or unavailable capability>"]
+}
+```
 
-Return: актуальное состояние for the research brief.
+- MAX 15 findings, one fact per entry; include only schema, endpoint, config, or
+  key-file facts that affect the plan.
+- Use `partial` when the reading budget prevents needed coverage. Use `failed` only
+  when code access is unavailable. Empty results are `success` with gaps.
+- Do not add narration or "not found" entries unless the result blocks a step.
+
+Return current-state facts for the internal research brief.
 ```

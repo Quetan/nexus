@@ -11,6 +11,7 @@ You are Subagent A — MemPalace research. Your task:
 
 Task scope: {entities: [...], repos: [...]}   # full list, not one dispatch per entity
 Palace rooms: {rooms}
+allow_external: {true|false}                  # record only; this track remains MemPalace-only
 
 Dispatch ONE subagent per track — this subagent iterates over the full list internally.
 
@@ -19,7 +20,7 @@ Dispatch ONE subagent per track — this subagent iterates over the full list in
 3. Collect findings with drawer IDs and dates
 
 Return contract (JSON):
-- {"status": "success"|"partial"|"failed", "findings": [{"fact", "source": "drawer:<id>", "date"}], "gaps": ["topic"]}
+- {"status": "success"|"partial"|"failed", "findings": [{"fact": "...", "source": "drawer:<id>", "date": "YYYY-MM-DD"}], "gaps": ["topic"]}
 - MAX 10 findings, only facts that affect an implementation plan (schema, endpoints, configs, decisions).
 - status "failed" only if the source itself is unavailable; an empty result is status "success" with topics in gaps.
 ```
@@ -35,6 +36,7 @@ You are Subagent B — Wiki research. Your task:
 
 Task scope: {entities: [...], topics: [...], ticket IDs}   # full list, not one dispatch per entity
 Project: {project}
+allow_external: {true|false}                  # false unless requester explicitly authorized it
 
 Dispatch ONE subagent per track — this subagent iterates over the full list internally.
 
@@ -43,9 +45,11 @@ Dispatch ONE subagent per track — this subagent iterates over the full list in
 3. Collect findings with wikilink citations
 
 Return contract (JSON):
-- {"status": "success"|"partial"|"failed", "findings": [{"fact", "source": "wiki:<path>", "date"}], "gaps": ["topic"]}
+- {"status": "success"|"partial"|"failed", "findings": [{"fact": "...", "source": "wiki:<path>", "date": "YYYY-MM-DD"}], "gaps": ["topic"]}
 - MAX 10 findings, only facts that affect an implementation plan (schema, endpoints, configs, decisions).
 - status "failed" only if the source itself is unavailable; an empty result is status "success" with topics in gaps.
+- For a within-wiki conflict, include both dated claims in `findings` and add a gap
+  stating that requester resolution is required. Do not select a winner.
 ```
 
 Rules: Vault-only. No code. Record gaps internally.

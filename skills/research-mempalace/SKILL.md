@@ -2,9 +2,10 @@
 name: research-mempalace
 description: >
   Use when extracting context, facts, or decisions from MemPalace for a research
-  task. Called by nexus during Phase 2a vault research. Requires mempalace MCP.
+  task. Called by nexus during Phase 2a vault research.
   Standalone use: when you need to search MemPalace for project context. Do NOT
   use for Obsidian wiki queries (use research-wiki) or code exploration.
+compatibility: mempalace MCP
 ---
 
 # research-mempalace
@@ -49,9 +50,9 @@ and prior work. Returns structured findings with drawer IDs and date stamps.
 }
 ```
 
-- `status`: success = all entities searched; partial = some searches empty/failed;
-  failed = source unavailable (MCP down). Empty result is NOT `failed` — it is
-  `success` with the topics in `gaps`.
+- `status`: success = completed coverage; partial = coverage constrained by a
+  failed search or budget; failed = source unavailable (MCP down). Empty results
+  are `success` with the topics in `gaps`.
 - Hard cap: **10 findings**. Only facts that affect the implementation plan
   (schema, endpoints, configs, decisions).
 - No prose, no narration. A "not found" entry only if it blocks a plan step.

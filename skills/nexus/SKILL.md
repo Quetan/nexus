@@ -5,7 +5,7 @@ description: >
   implementation — any project with MemPalace + Obsidian LLM Wiki, even if the
   user doesn't name a specific project. Triggers on "/nexus", "nexus research",
   "собери контекст", "исследуй перед реализацией", or any task in a tracked
-  project workspace. Do NOT use when only vault operations (write/ingest/query/lint) are needed
+  project workspace. Do NOT use when only vault operations (write/query/lint) are needed
   without research flow. Requires: onboarding-harness, research-mempalace,
   research-wiki, research-synthesize, research-brief, research-plan, vault-query,
   vault-write, vault-lint, vault-index.
@@ -15,21 +15,17 @@ description: >
 
 ## Why this exists
 
-Tasks fail when agents guess schema, ports, or prior decisions from code or stale
-markdown. This skill forces institutional memory lookup — MemPalace drawers and
-Obsidian wiki — before any implementation plan. It delivers one compact document — a short
-Контекст block plus a deterministic step-by-step plan — then stops. No code
-unless the user explicitly approves implementation.
+Research institutional memory before proposing implementation. Deliver one
+requester-localized plan, then stop; do not write code without explicit approval.
 
-**Core principle:** Institutional memory before implementation; every session
-writes its work back — MemPalace gets the full work log (continuous, verbatim),
-the wiki gets curated key knowledge. On conflict — newer record wins (by date).
+## Language and output policy
 
-## Language Rule
-
-- This skill file and references/: **English**
-- Research Brief: **Russian**
-- Implementation Plan: match user request language (default Russian)
+- Keep all skill instructions, subagent prompts, and structured handoffs in English.
+- Infer the requester's locale from the request. If it is ambiguous, ask once before
+  the final emission.
+- Localize all Phase 5 labels and prose to that locale. Preserve paths, identifiers,
+  commands, and source citations unchanged.
+- Phase 4 is internal input only. Phase 5 is the sole user-facing research emission.
 
 ## Workflow Checklist
 
@@ -45,18 +41,17 @@ the wiki gets curated key knowledge. On conflict — newer record wins (by date)
 
 ### Code Exploration — only after Phase 2b
 - [ ] Phase 3: Code exploration guided by vault findings
-- [ ] MemPalace checkpoint after Phase 3 — актуальное состояние → `documentation` [ref]
+- [ ] MemPalace checkpoint after Phase 3 — current state → `documentation` [ref]
 
 ### Deliverables
-- [ ] Phase 4: research-brief — compact Контекст block (≤8 bullets, Russian)
-- [ ] Phase 5: research-plan — merged deliverable: Контекст + deterministic plan
+- [ ] Phase 4: research-brief — internal, sourced context
+- [ ] Phase 5: research-plan — one localized context-and-plan emission
 - [ ] MemPalace checkpoint after Phase 5 — plan decisions → `decisions` [ref]
 - [ ] Phase 6: Handoff — wait for user approval before coding
 
 ### Post-delivery
 - [ ] Phase 7: Wiki capture if significant new knowledge
-  - Delegate to `vault-write` (direct wiki write, no raw staging) with user approval
-  - For manual external dumps only: `vault-ingest`
+  - Delegate to `vault-write` for direct wiki writing with user approval
 - [ ] MemPalace checkpoint after Phase 7 — final decisions + session close → `decisions` + diary [ref]
 
 ## Phase Details
@@ -76,12 +71,12 @@ fully covered by the table below.
 
 **Tier rules:**
 - **light** — single fact lookup, 1-2 known entities, no schema/endpoint change implied
-  → run ONE research track (whichever the question targets), skip Phase 3, use condensed
-  3-5 line answer with sources instead of full Research Brief template
+  → run one targeted research track, skip Phase 3, and emit the localized compact
+  format from `research-plan`: 3-5 sourced lines and blockers only when action is blocked
 - **medium** — typical feature/bugfix touching known entities
-  → both tracks (2a), code exploration under budget (see Phase 3), full Brief + Plan
+  → run both tracks, code exploration under budget, then the standard final format
 - **full** — migration, new architecture, cross-service change, or scope genuinely unclear
-  → full pipeline as today
+  → run the standard pipeline and ask focused questions for unresolved blockers
 
 If unsure which tier applies, default to **medium**. User can always request full
 explicitly ("сделай полное исследование" / "full nexus").
@@ -102,12 +97,36 @@ Dispatch two sub-agents in parallel:
 
 No code exploration during Phase 2a (except 1-2 user-named peek files).
 
+All research and Phase 3 handoffs use:
+
+```json
+{"status":"success|partial|failed","findings":[],"gaps":[]}
+```
+
+`failed` means the source or required capability was unavailable. `partial` means
+coverage was limited. Empty results remain `success` with gaps. Promote a gap to a
+blocker only when it prevents a specific plan step. `research-synthesize` retains
+the blocked step and the user question in the structured handoff.
+
+### External-source gate
+
+Set `allow_external: true` only when the requester explicitly authorizes external
+sources for this task. Without that value, research-wiki and vault-query are
+vault-only; do not use web, codegraph, or other external evidence. Record the
+gate value in every dispatched research prompt.
+
+### Conflict policy
+
+- Resolve contradictory records by newer date only when the records come from
+  different sources (MemPalace versus wiki).
+- Never choose a winner for a conflict within the wiki. Preserve both dated claims,
+  mark the relevant step blocked, and ask the requester to resolve it.
+- Equal or missing cross-source dates are also blockers; never infer a winner.
+
 ### Phase 7 — Wiki Capture
 
-If session produced durable knowledge: call `vault-write` (direct wiki write,
-no raw staging) with user approval. Skip for routine bugfixes with no new
-decisions. `vault-ingest` is reserved for manual/external source drops — it
-is never chained after `vault-write`.
+If session produced durable knowledge: call `vault-write` for direct wiki writing
+with user approval. Skip routine bugfixes with no new decisions.
 
 ### MemPalace Logging (throughout)
 
@@ -121,11 +140,12 @@ See [MemPalace logging](references/mempalace-logging.md).
 - [ ] Harness check completed
 - [ ] Vault research completed before code (except peek)
 - [ ] Research track(s) ran per tier (both for medium/full, target track for light)
-- [ ] Контекст ≤ 8 bullets, every bullet cites a source (drawer id or wikilink)
-- [ ] Every plan step has file-path + command + verification
-- [ ] No findings narrative, no gaps/conflicts prose (only Блокеры if blocking)
+- [ ] Medium/full context has 2-3 short, plain-language sourced paragraphs
+- [ ] Plan has 3-7 one-line steps and one concise localized verification line
+- [ ] Light output has 3-5 sourced lines; no artificial context or steps
+- [ ] No findings narrative, gaps, or conflicts unless a blocker stops a step
 - [ ] No implementation code (unless user approved)
-- [ ] Plan is in user's language; Контекст is Russian
+- [ ] Phase 5 is the only user-facing output and matches requester locale
 - [ ] Phase 7 noted — scheduled or skipped with reason
 - [ ] Every checkpoint phase (1, 2b, 3, 5, 7) logged to MemPalace
 
@@ -133,7 +153,7 @@ See [MemPalace logging](references/mempalace-logging.md).
 
 - Runtime ports, credentials, docker: palace manifest only — not markdown
 - Wiki track is mandatory even if user says skip; record gap if vault empty
-- Older record does not win — newer date wins (equal/missing dates → ask user)
+- Newer-wins applies only across sources; equal/missing dates → ask user
 - Never batch two checkpoint phases into one — a mid-session crash loses un-logged work
 
 ## Anti-patterns
@@ -144,7 +164,7 @@ See [MemPalace logging](references/mempalace-logging.md).
 | "Faster to grep code" | Code after vault synthesis |
 | "User said skip wiki" | Wiki is mandatory; record gap if empty |
 | "I'll write migration now" | Plan first |
-| "Need to show what I found" | User wants the plan, not the findings — emit compact Контекст + steps only |
+| "Need to show what I found" | Emit only the tier-appropriate localized plan |
 | "Too small to log" | Every phase accrues decisions — checkpoint it, verbatim |
 | "Too small for brief+plan" | Tier-appropriate output is still required — light tier uses condensed format, it does not skip sourcing |
 
@@ -157,8 +177,8 @@ See [MemPalace logging](references/mempalace-logging.md).
 | 2a | Vault research | `research-mempalace` + `research-wiki` |
 | 2b | Synthesize | `research-synthesize` |
 | 3 | Code | self |
-| 4 | Brief | `research-brief` (compact Контекст) |
-| 5 | Plan | `research-plan` (merged Контекст + steps) |
+| 4 | Brief | `research-brief` (internal context) |
+| 5 | Plan | `research-plan` (single final emission) |
 | 6 | Handoff | self |
-| 7 | Wiki capture | `vault-write` (direct), or `vault-ingest` for manual raw drops |
+| 7 | Wiki capture | `vault-write` (direct) |
 | CP | MemPalace checkpoint (after 1, 2b, 3, 5, 7) | `mempalace_checkpoint` (self) |
