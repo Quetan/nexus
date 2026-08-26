@@ -9,7 +9,7 @@ It combines MemPalace with a wiki-backed research flow.
 | Skill | Purpose |
 | --- | --- |
 | `nexus` | Orchestrate research and the final plan |
-| `onboarding-harness` | Verify MCP availability and project context |
+| `onboarding-harness` | Optional diagnostic for MCP / vault binding |
 | `research-mempalace` | Extract MemPalace findings |
 | `research-wiki` | Extract wiki findings through `vault-query` |
 | `research-synthesize` | Merge findings and expose material conflicts |
@@ -24,20 +24,24 @@ It combines MemPalace with a wiki-backed research flow.
 
 ```mermaid
 graph TD
-  N[nexus] --> O[onboarding-harness]
-  N --> M[research-mempalace]
+  N[nexus] --> M[research-mempalace]
   N --> W[research-wiki]
   W --> Q[vault-query]
   N --> S[research-synthesize]
   N --> B[research-brief]
   N --> P[research-plan]
+  N -.->|diagnostic only| O[onboarding-harness]
 ```
 
+Session start assumes MCP is available and defaults to `mcp-mode=repo-bound`.
+No mandatory availability ping. Manifest lookup runs only when project/rooms are
+ambiguous. Medium/full Phase 2a uses parallel Task agents (`nexus-mempalace` +
+`nexus-wiki`, fallback `generalPurpose`). Phase 3 uses Task `explore`. Light
+runs one research track inline on the parent.
 `research-plan` emits the only final user-facing response. It uses the
 requester's locale; instruction prose and inter-skill data remain English.
 Light requests receive concise sourced answers. Medium and full requests
 receive sourced Context, 3–7 steps, and verification.
-
 ## Wiki Capture
 
 ```text
@@ -70,6 +74,10 @@ npx skills add /Users/quetan/Development/nexus -g -a claude-code -y
 
 # Install globally for Cursor
 npx skills add /Users/quetan/Development/nexus -g -a cursor -y
+
+# Optional: mirror Phase 2a Task agents for all projects
+mkdir -p ~/.cursor/agents
+cp /Users/quetan/Development/nexus/.cursor/agents/nexus-*.md ~/.cursor/agents/
 ```
 
 ## Usage

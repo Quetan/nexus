@@ -17,27 +17,23 @@ and prior work. Returns structured findings with drawer IDs and date stamps.
 
 ## Input
 
-- **Task scope**: `entities[]` (list) — all entities are processed within a single
-  subagent dispatch, never one dispatch per entity
-- **Rooms**: palace rooms mapped to the project (from manifest)
+- **Task scope**: `entities[]` — process the full list in **one** invocation
+  (never one Task/dispatch per entity)
+- **Rooms**: from Phase 1 defaults or manifest when looked up
+- **Invocation**: medium/full → one Task (`nexus-mempalace` or `generalPurpose`);
+  light → parent runs this skill inline
 
 ## Process
 
-1. Determine palace rooms from project manifest or convention
-   - Default rooms for any project: `documentation`, `architecture`, `decisions`
-   - Project-specific rooms: from project manifest `searches` section
+1. Determine palace rooms from Phase 1 / manifest or convention
+   - Default rooms: `documentation`, `architecture`, `decisions`
+   - Project-specific: from manifest `searches` when available
 2. For each entity/symbol in task scope:
    - `mempalace_search(query=entity, wing=<project>, limit=3)`
-   - `mempalace_kg_query(entity=<entity>)` — get relationships (max 5 relations)
-   This loop runs inside one subagent context. Nexus dispatches exactly ONE
-   research-mempalace subagent per task, regardless of scope size.
+   - `mempalace_kg_query(entity=<entity>)` — max 5 relations
 3. For architectural/ticket queries:
    - `mempalace_search(query=topic, wing=<project>, room=relevant-room, limit=5)`
-4. Collect all findings with:
-   - Drawer ID or KG fact reference
-   - Date stamp (`valid_from`, frontmatter `date`, or drawer timestamp)
-   - Content summary
-
+4. Collect findings with drawer ID / KG ref, date stamp, content summary
 ## Output — structured contract (JSON)
 
 ```json
@@ -68,7 +64,7 @@ and prior work. Returns structured findings with drawer IDs and date stamps.
 
 ## Gotchas
 
-- Never spawn one subagent invocation per entity — batch the full scope into a single dispatch per track
-- Drawer IDs are required for traceability — never omit
-- KG query may return empty for new entities — record as gap, don't assume non-existence
-- Legacy palace rooms may not exist — use manifest rooms only
+- Never one Task per entity — one track invocation batches the full scope
+- Drawer IDs required for traceability
+- Empty KG for new entities → gap, not "does not exist"
+- Legacy rooms may be missing — use Phase 1 / manifest rooms only

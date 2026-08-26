@@ -30,14 +30,16 @@ Obsidian wiki semantics use `wiki/` as the content root.
 - Never call `write_note` with bare `projects/...` — that creates files at
   repo root (`<repo>/projects/...`) instead of `<repo>/wiki/projects/...`
 
-If onboarding-harness reports MCP mode `wiki-bound` (no top-level `wiki/`
-dir), omit the `wiki/` prefix. Default live mode is `repo-bound`.
+Default live mode is **`repo-bound`**. Assume it unless a binding probe (or
+optional `onboarding-harness` diagnostic) reports `wiki-bound` — then omit the
+`wiki/` prefix. Do not probe on every research run; probe after a path error or
+immediately before write when binding is unknown.
 
 ## Vault Path Resolution
 
 If the vault location must be resolved manually (e.g., file I/O fallback):
-1. **Ask mcpvault** — `get_vault_stats()` + `list_directory("/")`; confirm
-   `wiki` appears as a top-level directory (`repo-bound`)
+1. **Ask mcpvault** — `list_directory("/")` (optional `get_vault_stats` only when
+   diagnosing); confirm `wiki` appears as a top-level directory (`repo-bound`)
 2. **Default macOS path** — `~/Development/obsidian-vault/` (repo);
    wiki content under `wiki/`
 3. **Ask user** — if neither works

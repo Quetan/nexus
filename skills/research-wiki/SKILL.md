@@ -19,21 +19,20 @@ Returns wikilink-cited findings for the research task.
 
 ## Input
 
-- **Task scope**: `entities[]` (list) — all entities are processed within a single
-  subagent dispatch, never one dispatch per entity
-- **External-source gate**: `allow_external` is `false` unless the requester
-  explicitly authorizes external sources for this task
+- **Task scope**: `entities[]` — process the full list in **one** invocation
+  (never one Task/dispatch per entity)
+- **External-source gate**: `allow_external` false unless requester authorizes
+- **Invocation**: medium/full → one Task (`nexus-wiki` or `generalPurpose`);
+  light → parent runs this skill inline
+- **mcp-mode**: default `repo-bound` (`wiki/` MCP prefix)
 
 ## Process
 
-1. Read vault `index.md` → list candidate pages
-2. Call `vault-query` ONCE with the full question list (batch mode) — one combined
-   result for all entities, not one call per entity. The loop runs inside one
-   subagent context; nexus dispatches exactly ONE research-wiki subagent per task,
-   regardless of scope size.
-3. For architectural/cross-cutting topics:
-   - Follow backlinks from central pages (`search_notes(query="<title>", searchContent=true)` or file I/O grep for `[[<basename>]]`)
-   - Read relevant sections adaptively
+1. Read vault `index.md` → candidate pages
+2. Call `vault-query` **once** (batch) for the full question list
+3. For cross-cutting topics: backlinks via
+   `search_notes(query="<title>", searchContent=true)` or grep `[[<basename>]]`
+4. Collect findings with wiki path, date, content summary
 
 ## Output — structured contract (JSON)
 
@@ -66,6 +65,6 @@ Returns wikilink-cited findings for the research task.
 
 ## Gotchas
 
-- Never spawn one subagent invocation per entity — batch the full scope into a single dispatch per track
-- vault-query is vault-only by default — don't supplement with web/codegraph unless allowed
-- index.md may be incomplete after many ingests — also search directly
+- Never one Task per entity — one track invocation batches the full scope
+- vault-query is vault-only unless `allow_external: true`
+- index.md may be incomplete — also search directly

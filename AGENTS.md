@@ -16,6 +16,8 @@ The authoritative design is
 | Skill count | 11 total: `nexus` plus 10 peer skills |
 | Coupling | Light; dependencies are named in `Requires:` |
 | Research | MemPalace and wiki research precede code exploration |
+| Session start | No MCP availability pings; default `mcp-mode=repo-bound`; manifest in Phase 1 |
+| Subagents | Phase 2a: `nexus-mempalace`/`nexus-wiki` or `generalPurpose`; Phase 3: `explore`; light inline |
 | Capture | `vault-write` is the only wiki capture path |
 | Approval | Draft first; write only after `save`, `edit`, or `skip` |
 | Output language | User-facing content uses the requester's locale; internal instructions and handoffs use English |
@@ -26,7 +28,7 @@ The authoritative design is
 ```text
 skills/
 ├── nexus/                 # research orchestrator
-├── onboarding-harness/    # MCP and project-manifest check
+├── onboarding-harness/    # optional MCP/binding diagnostic
 ├── research-mempalace/    # MemPalace findings
 ├── research-wiki/         # wiki findings via vault-query
 ├── research-synthesize/   # merge and conflict handling
@@ -38,7 +40,9 @@ skills/
 └── vault-lint/            # read-only wiki health checks
 ```
 
-## Skill Authoring Contract
+Cursor Task agents for Phase 2a: `.cursor/agents/nexus-mempalace.md` and
+`nexus-wiki.md`. For cross-project use, copy them to `~/.cursor/agents/`.
+Agent names differ from skill names on purpose (avoid skill/Task collision).## Skill Authoring Contract
 
 - Keep each skill single-purpose and imperative.
 - Main `SKILL.md` files must stay at or below 200 lines; references are loaded
@@ -58,7 +62,7 @@ Use the tier appropriate to the request:
 
 | Tier | Flow | Final emission |
 | --- | --- | --- |
-| Light | One relevant research track; no code exploration | 3–5 concise sourced lines |
+| Light | One relevant research track (inline); no code exploration | 3–5 concise sourced lines |
 | Medium | Both tracks, synthesis, scoped code exploration | 2–3 Context paragraphs, 3–7 steps, verification |
 | Full | Medium flow with broader scope | 2–3 Context paragraphs, 3–7 steps, verification |
 

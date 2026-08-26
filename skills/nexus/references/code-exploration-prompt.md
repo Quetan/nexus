@@ -1,42 +1,31 @@
 # Code Exploration Prompt
 
-Load this file when dispatching code exploration subagent during **Phase 3** (after Phase 2b synthesis).
+Load when dispatching Phase 3 (after Phase 2b). Skip for **light**.
 
-## Subagent C — Code Exploration
+## Dispatch
 
-Prompt template:
+- **Required `subagent_type`:** `explore`
+- Do **not** use `generalPurpose`
+- Pass **synthesized** vault findings only — max 15 facts, one line each
+  (`fact` + `source`). Do not dump raw MCP payloads or full page bodies.
+
+## Prompt
 
 ```
-You are Subagent C — Code exploration. Guided by these vault findings:
+Code exploration for nexus. Guided by these vault findings (already synthesized):
 
-{vault_findings}
+{vault_findings_max_15}
 
-Explore the codebase for:
+Find only plan-relevant current state:
 1. Schema (tables, keys, nullable, indexes)
 2. Endpoints (routes, methods, middleware)
 3. Configs (env vars, ports)
 4. Key files (controllers, migrations, routes)
 
-Budget: read at most 8 files, ~150 lines each in full context. For larger files,
-read only the relevant function/route/migration block. If scope needs more, stop
-and report partial coverage rather than reading everything — flag what was skipped.
+Budget: ≤8 files, ~150 lines each (or the relevant block). If more needed →
+status partial and list skipped areas.
 
-Return contract:
-```json
-{
-  "status": "success|partial|failed",
-  "findings": [
-    {"fact": "<plan-relevant fact>", "source": "code:<path>:<line-or-symbol>"}
-  ],
-  "gaps": ["<skipped coverage or unavailable capability>"]
-}
-```
-
-- MAX 15 findings, one fact per entry; include only schema, endpoint, config, or
-  key-file facts that affect the plan.
-- Use `partial` when the reading budget prevents needed coverage. Use `failed` only
-  when code access is unavailable. Empty results are `success` with gaps.
-- Do not add narration or "not found" entries unless the result blocks a step.
-
-Return current-state facts for the internal research brief.
+Return ONLY JSON:
+{"status":"success|partial|failed","findings":[{"fact":"...","source":"code:<path>:<line-or-symbol>"}],"gaps":["..."]}
+MAX 15 findings. Empty=success+gaps. No narration.
 ```

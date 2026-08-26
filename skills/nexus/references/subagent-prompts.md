@@ -1,57 +1,74 @@
 # Subagent Prompts — Phase 2a Vault Research
 
-Load this file when dispatching parallel sub-agents during **Phase 2a** (vault research only, no code).
+Load **only** when dispatching medium/full Phase 2a (not for light inline).
 
-## Subagent A — research-mempalace
+## Dispatch rules
 
-Prompt template:
+| Track | Prefer `subagent_type` | Fallback | Forbidden |
+| --- | --- | --- | --- |
+| A — MemPalace | `nexus-mempalace` (`.cursor/agents/` or `~/.cursor/agents/`) | `generalPurpose` | `explore` |
+| B — Wiki | `nexus-wiki` | `generalPurpose` | `explore` |
 
-```
-You are Subagent A — MemPalace research. Your task:
+- Launch **two** Task calls in **one** parent message.
+- One Task per track; batch all entities inside that Task.
+- Custom agents already know the skill contract — send **scope payload only**
+  (below). Do not paste the full skill body into the Task prompt.
+- Fallback `generalPurpose`: send the compact prompt template for that track.
+- Never use `explore` for MCP research.
 
-Task scope: {entities: [...], repos: [...]}   # full list, not one dispatch per entity
-Palace rooms: {rooms}
-allow_external: {true|false}                  # record only; this track remains MemPalace-only
+## Scope payload (custom agents)
 
-Dispatch ONE subagent per track — this subagent iterates over the full list internally.
-
-1. Search MemPalace: mempalace_search for each entity/room
-2. Query KG: mempalace_kg_query for each entity
-3. Collect findings with drawer IDs and dates
-
-Return contract (JSON):
-- {"status": "success"|"partial"|"failed", "findings": [{"fact": "...", "source": "drawer:<id>", "date": "YYYY-MM-DD"}], "gaps": ["topic"]}
-- MAX 10 findings, only facts that affect an implementation plan (schema, endpoints, configs, decisions).
-- status "failed" only if the source itself is unavailable; an empty result is status "success" with topics in gaps.
-```
-
-Rules: No code exploration. No inventing facts. Record gaps internally.
-
-## Subagent B — research-wiki → vault-query
-
-Prompt template:
+**A — nexus-mempalace**
 
 ```
-You are Subagent B — Wiki research. Your task:
-
-Task scope: {entities: [...], topics: [...], ticket IDs}   # full list, not one dispatch per entity
-Project: {project}
-allow_external: {true|false}                  # false unless requester explicitly authorized it
-
-Dispatch ONE subagent per track — this subagent iterates over the full list internally.
-
-1. Read vault index.md
-2. Call vault-query once (batch mode) with the full question list
-3. Collect findings with wikilink citations
-
-Return contract (JSON):
-- {"status": "success"|"partial"|"failed", "findings": [{"fact": "...", "source": "wiki:<path>", "date": "YYYY-MM-DD"}], "gaps": ["topic"]}
-- MAX 10 findings, only facts that affect an implementation plan (schema, endpoints, configs, decisions).
-- status "failed" only if the source itself is unavailable; an empty result is status "success" with topics in gaps.
-- For a within-wiki conflict, include both dated claims in `findings` and add a gap
-  stating that requester resolution is required. Do not select a winner.
+wing: {project}
+entities: [...]
+repos: [...]
+rooms: [...]
+allow_external: {true|false}   # record only; MemPalace-only track
 ```
 
-Rules: Vault-only. No code. Record gaps internally.
+**B — nexus-wiki**
 
-**Note:** For Phase 3 code exploration, load `code-exploration-prompt.md` separately after Phase 2b synthesis.
+```
+project: {project}
+entities: [...]
+topics: [...]
+ticket_ids: [...]
+allow_external: {true|false}
+mcp-mode: repo-bound
+```
+
+## Compact prompts (generalPurpose fallback only)
+
+### A — MemPalace
+
+```
+MemPalace research track. Batch all entities in this one run. No code.
+
+wing: {project}; entities: [...]; repos: [...]; rooms: [...]
+
+For each entity: mempalace_search(limit=3) + mempalace_kg_query (max 5 relations).
+Topic searches: room searches limit=5.
+
+Return ONLY JSON:
+{"status":"success|partial|failed","findings":[{"fact":"...","source":"drawer:<id>","date":"YYYY-MM-DD"}],"gaps":["..."]}
+MAX 10 plan-relevant findings. Empty=success+gaps. MCP down=failed.
+```
+
+### B — Wiki
+
+```
+Wiki research via vault-query (batch once). No code. Vault-only unless allow_external=true.
+mcp-mode: repo-bound (wiki/ MCP prefix).
+
+project: {project}; entities: [...]; topics: [...]; ticket_ids: [...]; allow_external: {true|false}
+
+1) Read index.md  2) vault-query once for full question list  3) backlinks if needed
+
+Return ONLY JSON:
+{"status":"success|partial|failed","findings":[{"fact":"...","source":"wiki:<path>","date":"YYYY-MM-DD"}],"gaps":["..."]}
+MAX 10. Within-wiki conflict: both dated claims + gap (no winner). Empty=success+gaps. MCP down=failed.
+```
+
+Phase 3: load `code-exploration-prompt.md`; required type `explore`.

@@ -2,38 +2,44 @@
 name: onboarding-harness
 compatibility: Requires MemPalace and mcpvault MCPs.
 description: >
-  Use when starting any nexus research workflow to verify MCP availability and
-  project manifest — even if the workflow was already run this session (a cached
-  result is reused when fresh, see Session Cache). Called
-  by nexus during Phase 0. Standalone use: before any multi-step agent workflow
-  that depends on MemPalace or mcpvault MCP. Do NOT use for simple single-command
-  queries.
+  Use when diagnosing MemPalace or mcpvault MCP binding problems — broken wiki
+  paths, unclear repo-bound vs wiki-bound mode, or missing project manifest.
+  Optional diagnostic only; nexus research does NOT call this on every run.
+  Do NOT use as a mandatory pre-flight health check. Do NOT use for routine
+  vault-query or vault-write when MCP already works.
 ---
 
 # onboarding-harness
 
 ## What it does
 
-Verify MemPalace + mcpvault availability and the project manifest. Detect whether
-mcpvault is bound to the vault **repo** root or directly to `wiki/`.
+Diagnose mcpvault binding and optionally MCP reachability / project manifest.
+Standalone troubleshooting — not part of the nexus mandatory checklist.
 
-## Session Cache
+## When to run
 
-Reuse a successful earlier result in this session (mempalace ✓, mcpvault ✓,
-manifest ✓, mcp-mode recorded) unless >30 minutes passed, user asks to re-check,
-or a later MCP call fails.
+- User asks to check MCP / fix vault paths
+- First MCP path read/write fails (missing path / wrong root)
+- Before `vault-write` when binding is unknown
 
-## Process
+Do **not** run at the start of every nexus research session.
 
-1. `mempalace_status` — MemPalace available
-2. `get_vault_stats` — mcpvault available
-3. **MCP binding probe** — `list_directory("/")`:
-   - `wiki` at top level → **`repo-bound`** (default): wiki MCP paths need `wiki/` prefix
-   - `projects` / `index.md` and no `wiki` dir → **`wiki-bound`**: omit `wiki/` prefix
-   - Record `mcp-mode` for the session
-4. Project scope — `mempalace_search(query="ONB manifest", wing=<project>, room="documentation", limit=1)`; fallback git/cwd
-5. If manifest found — extract rooms and searches
-6. Report:
+## Modes
+
+### Binding-only (default for path errors / pre-write)
+
+1. `list_directory("/")` only:
+   - `wiki` at top level → **`repo-bound`** (MCP paths need `wiki/` prefix)
+   - `projects` / `index.md` and no `wiki` → **`wiki-bound`** (omit `wiki/`)
+2. Report `mcp-mode=...` and stop.
+
+### Full diagnostic (user asked to check MCP)
+
+1. `mempalace_status`
+2. `get_vault_stats`
+3. Binding probe as above
+4. Optional: `mempalace_search(query="ONB manifest", wing=<project>, room="documentation", limit=1)`; fallback git/cwd
+5. Report:
 
 ```
 Onboarding harness: mempalace ✓ | mcpvault ✓ | mcp-mode=repo-bound | manifest ✓
@@ -43,19 +49,15 @@ Onboarding harness: mempalace ✓ | mcpvault ✓ | mcp-mode=repo-bound | manifes
 
 ```markdown
 ### Onboarding Results
-- mempalace: ✓ / ✗
-- mcpvault: ✓ / ✗
+- mempalace: ✓ / ✗ / skipped
+- mcpvault: ✓ / ✗ / skipped
 - mcp-mode: repo-bound | wiki-bound | unknown
-- manifest: ✓ / ✗ (project: <name>)
+- manifest: ✓ / ✗ / skipped (project: <name>)
 - rooms: [room1, room2, ...]
 ```
 
-## On MCP Failure
-
-Record the gap, continue with available sources, note limits in the brief.
-
 ## Gotchas
 
-- MCP failure does not block the workflow
-- Manifest may be stale — cross-check project structure
+- Default without this skill is **`repo-bound`**
+- Prefer binding-only unless the user asked for a full check
 - `repo-bound`: never `write_note("projects/...")` without `wiki/`

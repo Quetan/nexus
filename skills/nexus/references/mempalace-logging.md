@@ -44,8 +44,8 @@ mempalace_checkpoint(
 
 | Checkpoint | File to palace |
 | --- | --- |
-| after 1 | entities, repos, task type, assumptions → `decisions` |
-| after 2b | raw facts from both sub-agents + merged synthesis, gaps, conflict resolutions → `documentation` |
+| after 1 | project, tier, entities, repos, mcp-mode default, rooms source → `decisions` |
+| after 2b | track findings + merged synthesis, gaps, conflict resolutions → `documentation` |
 | after 3 | current state (code facts) → `documentation` |
 | after 5 | chosen approach, plan decisions → `decisions` |
 | after 7 | final decisions, wiki pages written, session close → `decisions` + diary |
