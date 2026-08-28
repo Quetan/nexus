@@ -38,10 +38,11 @@ No mandatory availability ping. Manifest lookup runs only when project/rooms are
 ambiguous. Medium/full Phase 2a uses parallel Task agents (`nexus-mempalace` +
 `nexus-wiki`, fallback `generalPurpose`). Phase 3 uses Task `explore`. Light
 runs one research track inline on the parent.
-`research-plan` emits the only final user-facing response. It uses the
-requester's locale; instruction prose and inter-skill data remain English.
-Light requests receive concise sourced answers. Medium and full requests
-receive sourced Context, 3–7 steps, and verification.
+`research-plan` emits the only final user-facing response — plain language in the
+requester's locale, without file paths, source citations, or shell commands.
+Instruction prose and inter-skill handoffs remain English with full technical
+detail. Light requests receive 3–5 concise lines. Medium and full requests
+receive Context, 3–7 steps, and verification — all human-readable.
 ## Wiki Capture
 
 ```text

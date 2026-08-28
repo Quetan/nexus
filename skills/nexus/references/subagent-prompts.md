@@ -4,10 +4,10 @@ Load **only** when dispatching medium/full Phase 2a (not for light inline).
 
 ## Dispatch rules
 
-| Track | Prefer `subagent_type` | Fallback | Forbidden |
-| --- | --- | --- | --- |
+| Track         | Prefer `subagent_type`                                       | Fallback         | Forbidden |
+| ------------- | ------------------------------------------------------------ | ---------------- | --------- |
 | A — MemPalace | `nexus-mempalace` (`.cursor/agents/` or `~/.cursor/agents/`) | `generalPurpose` | `explore` |
-| B — Wiki | `nexus-wiki` | `generalPurpose` | `explore` |
+| B — Wiki      | `nexus-wiki`                                                 | `generalPurpose` | `explore` |
 
 - Launch **two** Task calls in **one** parent message.
 - One Task per track; batch all entities inside that Task.
@@ -48,7 +48,7 @@ MemPalace research track. Batch all entities in this one run. No code.
 
 wing: {project}; entities: [...]; repos: [...]; rooms: [...]
 
-For each entity: mempalace_search(limit=3) + mempalace_kg_query (max 5 relations).
+For each entity: mempalace_search(limit=3) + mempalace_kg_query (max 10 relations).
 Topic searches: room searches limit=5.
 
 Return ONLY JSON:

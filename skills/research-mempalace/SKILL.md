@@ -30,7 +30,7 @@ and prior work. Returns structured findings with drawer IDs and date stamps.
    - Project-specific: from manifest `searches` when available
 2. For each entity/symbol in task scope:
    - `mempalace_search(query=entity, wing=<project>, limit=3)`
-   - `mempalace_kg_query(entity=<entity>)` — max 5 relations
+   - `mempalace_kg_query(entity=<entity>)` — max 10 relations
 3. For architectural/ticket queries:
    - `mempalace_search(query=topic, wing=<project>, room=relevant-room, limit=5)`
 4. Collect findings with drawer ID / KG ref, date stamp, content summary

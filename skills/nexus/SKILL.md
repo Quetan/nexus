@@ -23,8 +23,11 @@ requester-localized plan, then stop; do not write code without explicit approval
 - Keep all skill instructions, subagent prompts, and structured handoffs in English.
 - Infer the requester's locale from the request. If it is ambiguous, ask once before
   the final emission.
-- Localize all Phase 5 labels and prose to that locale. Preserve paths, identifiers,
-  commands, and source citations unchanged.
+- Phase 5 (`research-plan`): localize labels and prose; write in plain, human-readable
+  language. Do **not** include file paths, source citations, wikilinks, drawer IDs,
+  or raw shell commands in the user-facing emission.
+- Phases 2–4 retain full technical detail (paths, sources, commands) in structured
+  internal handoffs only.
 - Phase 4 is internal input only. Phase 5 is the sole user-facing research emission.
 
 ## Workflow Checklist
@@ -46,7 +49,7 @@ requester-localized plan, then stop; do not write code without explicit approval
 - [ ] Phase 4: research-brief — internal, sourced context
 - [ ] Phase 5: research-plan — one localized context-and-plan emission
 - [ ] MemPalace checkpoint after Phase 5 — plan decisions → `decisions` [ref]
-- [ ] Phase 6: Handoff — wait for user approval before coding
+- [ ] Phase 6: Handoff — wait for user approval; implement from internal context (Phases 2–4), not Phase 5 text alone
 
 ### Post-delivery
 - [ ] Phase 7: Wiki capture if significant new knowledge
@@ -84,7 +87,7 @@ phases are fully covered by the table below.
 **Tier rules:**
 - **light** — single fact lookup, 1-2 known entities, no schema/endpoint change
   → **one** relevant track **inline** (no Task; wiki **or** MemPalace), skip Phase 3;
-  compact `research-plan` (3–5 sourced lines; blockers only if blocked)
+  compact `research-plan` (3–5 plain-language lines; blockers only if blocked)
 - **medium** — known entities → **both** tracks + code exploration under budget
 - **full** — migration / new architecture / cross-service / unclear scope → both
   tracks + broader exploration; ask on unresolved blockers
@@ -137,6 +140,13 @@ gate value in every dispatched research prompt.
   mark the relevant step blocked, and ask the requester to resolve it.
 - Equal or missing cross-source dates are also blockers; never infer a winner.
 
+### Phase 6 — Handoff
+
+Wait for explicit requester approval before writing code. On approval, implement
+using the internal brief, synthesis, and code-exploration contracts — not the
+Phase 5 user-facing plan alone. Phase 5 is a human-readable summary; technical
+paths and commands remain in Phases 2–4.
+
 ### Phase 7 — Wiki Capture
 
 If session produced durable knowledge: call `vault-write` for direct wiki writing
@@ -153,8 +163,8 @@ See [MemPalace logging](references/mempalace-logging.md).
 
 - [ ] Bootstrap done (default mcp-mode; no availability pings); vault before code
 - [ ] Tracks and subagent types match tier matrix; Phase 3 = `explore`
-- [ ] Medium/full: 2–3 sourced Context paragraphs, 3–7 steps, verification
-- [ ] Light: 3–5 sourced lines only; Phase 5 sole user-facing emission
+- [ ] Medium/full: 2–3 plain-language Context paragraphs, 3–7 steps, verification (no paths/citations/commands in Phase 5)
+- [ ] Light: 3–5 plain-language lines only; Phase 5 sole user-facing emission
 - [ ] No code without approval; Phase 7 noted; checkpoints 1/2b/3/5/7 logged
 
 ## Gotchas
@@ -185,6 +195,6 @@ See [MemPalace logging](references/mempalace-logging.md).
 | 3 | Code | Task `explore` |
 | 4 | Brief | `research-brief` (internal context) |
 | 5 | Plan | `research-plan` (single final emission) |
-| 6 | Handoff | self |
+| 6 | Handoff (internal context for coding) | self |
 | 7 | Wiki capture | `vault-write` (direct) |
 | CP | MemPalace checkpoint (after 1, 2b, 3, 5, 7) | `mempalace_checkpoint` (self) |
