@@ -13,7 +13,9 @@ from another session. Curate the material directly into typed pages under
 2. **Extract claims** — distinguish direct source statements from inferences.
    Tag source-backed claims `user:` when supplied by the requester; otherwise
    use `UNVERIFIED` until corroborated. Tag wiki-derived claims `vault:` with a
-   wikilink.
+   wikilink. Use `tool:` only for directly observed session actions or results
+   under the [write protocol](write-protocol.md); retrieving an external claim
+   with a tool does not by itself corroborate that claim.
 3. **Decompose** — identify entities, concepts, decisions, tasks, data points,
    and relationships. Do not create a `type: source` page.
 4. **Search for overlap** — find matching wiki pages before proposing changes.
@@ -25,9 +27,11 @@ from another session. Curate the material directly into typed pages under
    drafts; ask once if their language is unclear.
 6. **Wait for approval** — require explicit `save` for every new page and
    proposed update.
-7. **Write and verify** — write approved pages to MCP paths under `wiki/...`,
-   update indexes through `vault-index`, and read each created or changed page
-   back from its `wiki/...` path.
+7. **Write and verify** — follow the [save flow](write-protocol.md#save-flow)
+   with the selected `vault_access` backend. Read back changed pages and use
+   `vault-index`'s verification summary for indexes/log; do not reread verified entries.
+   If session work is included, apply the session capture sections in the write
+   protocol. Reply with status and verified page links only.
 
 ## Page Type Mapping
 

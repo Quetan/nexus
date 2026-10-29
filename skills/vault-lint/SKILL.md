@@ -1,6 +1,6 @@
 ---
 name: vault-lint
-compatibility: Requires mcpvault MCP.
+compatibility: mcpvault MCP, or an existing local vault with requester consent.
 description: >
   Use when checking Obsidian LLM Wiki health — orphan detection, staleness,
   contradictions, coverage gaps, index drift, broken wikilinks. Triggers on
@@ -10,6 +10,13 @@ description: >
 ---
 
 # vault-lint
+
+## Vault access
+
+Reuse `vault_access` (mode, absolute wiki root, consent); otherwise use MCP without pings.
+On missing tools or connection failure, read the bundled [local fallback](references/vault-access.md)
+once per agent context. Inherited `local` reuses its approved root; `skip` records
+the reason and skips vault operations. Under nexus, the parent owns local consent.
 
 ## What it does
 
@@ -40,11 +47,14 @@ Load when needed:
 
 ## Process
 
-1. Run each check sequentially
+1. Run each check sequentially through the selected backend
 2. For each check: PASS / WARN / FAIL
 3. On WARN/FAIL: list items with full vault paths
-4. Append summary to MCP `wiki/log.md` (wikilinks in entry: no `wiki/` prefix)
+4. Append summary to `wiki/log.md` in MCP mode or `<local_root>/log.md` in
+   approved local mode; read back to verify. Wikilinks omit the `wiki/` prefix.
 5. Present report to user
+
+On an uncertain log write, load bundled [write recovery](references/vault-access.md#write-recovery).
 
 ## Output
 
@@ -68,6 +78,8 @@ Load when needed:
 
 - Report only — never create, edit, or delete pages
 - Only append to `wiki/log.md` (no other writes)
-- If mcpvault is down → report as unable to check
+- If access is skipped, report checks as not performed with the reason; do not
+  fabricate PASS results or attempt a log write. If only logging fails, retain
+  the completed check report and explicitly report the unverified log update.
 - Do not turn legacy Wiki Purity findings into failures or propose automatic
   migrations.

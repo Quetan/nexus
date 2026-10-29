@@ -1,5 +1,6 @@
 ---
 name: research-wiki
+compatibility: mcpvault MCP, or an existing local vault with requester consent.
 description: >
   Use when extracting context from Obsidian LLM Wiki for a research task. Called
   by nexus during Phase 2a vault research. Delegates actual wiki queries to
@@ -7,10 +8,16 @@ description: >
   Standalone use: when you need to look up project knowledge from the wiki
   without the full research flow. Do NOT use for MemPalace queries (use
   research-mempalace) or code exploration.
-compatibility: mcpvault MCP
 ---
 
 # research-wiki
+
+## Vault access
+
+Reuse `vault_access` (mode, absolute wiki root, consent); otherwise use MCP without pings.
+On missing tools or connection failure, read the bundled [local fallback](references/vault-access.md)
+once per agent context. Inherited `local` reuses its approved root; `skip` records
+the reason and skips vault operations. Under nexus, the parent owns local consent.
 
 ## What it does
 
@@ -25,20 +32,24 @@ Returns wikilink-cited findings for the research task.
 - **Invocation**: medium/full → one Task (`nexus-wiki` or `generalPurpose`);
   light → parent runs this skill inline
 - **mcp-mode**: default `repo-bound` (`wiki/` MCP prefix)
+- **vault_access**: optional shared backend/root/consent context from the parent;
+  forward unchanged to vault-query, then return access changes to the parent
 
 ## Process
 
-1. Read vault `index.md` → candidate pages
-2. Call `vault-query` **once** (batch) for the full question list
+1. Read vault `index.md` through the selected backend → candidate pages
+2. Call `vault-query` **once** (batch) for the full question list, forwarding
+   `vault_access`. An approval-pending parent handoff may resume the same batch.
 3. For cross-cutting topics: backlinks via
-   `search_notes(query="<title>", searchContent=true)` or grep `[[<basename>]]`
+   MCP `search_notes(query="<title>", searchContent=true)` or, in approved
+   local mode, search `[[<basename>]]` under the selected local wiki root
 4. Collect findings with wiki path, date, content summary
 
 ## Output — structured contract (JSON)
 
 ```json
 {
-  "status": "success" | "partial" | "failed",
+  "status": "success|partial|failed",
   "findings": [
     {"fact": "<plan-relevant fact>", "source": "wiki:<vault-relative-path>", "date": "YYYY-MM-DD"}
   ],
@@ -46,9 +57,11 @@ Returns wikilink-cited findings for the research task.
 }
 ```
 
-- `status`: success = completed coverage; partial = coverage constrained by a
-  failed search or budget; failed = source unavailable (mcpvault down). Empty
-  results are `success` with the topics in `gaps`.
+- `status`: success = completed MCP or local coverage; partial = constrained
+  coverage; failed = wholly unavailable/skipped access, with reason in `gaps`.
+  Empty results are `success` with topic gaps. Record local use and known
+  freshness limitations in `gaps`. Return approval needs/access changes there
+  for the parent to retain; keep the JSON shape unchanged.
 - Hard cap: **10 findings**. Only facts that affect the implementation plan
   (schema, endpoints, configs, decisions).
 - No prose, no narration. A "not found" entry only if it blocks a plan step.

@@ -2,7 +2,7 @@
 
 ## Primary
 
-Use mcpvault MCP tools for all vault operations:
+Prefer mcpvault MCP tools; apply the shared access protocol below on unavailability:
 - `search_notes` — full-text search
 - `read_note` — read pages
 - `write_note` — create/overwrite pages (mode="append" appends)
@@ -11,9 +11,9 @@ Use mcpvault MCP tools for all vault operations:
 - `list_directory` / `get_notes_info` — list pages
 - `list_all_tags` — list tags
 
-Backlinks: no dedicated tool. Find references via
-`search_notes(query="<title>", searchContent=true)` or file I/O grep for
-`[[<basename>]]` under `wiki/`.
+Backlinks: no dedicated tool. In MCP mode use
+`search_notes(query="<title>", searchContent=true)`; in approved local mode
+search `[[<basename>]]` under the selected local wiki root.
 
 ## Dual-root model
 
@@ -22,10 +22,11 @@ Obsidian wiki semantics use `wiki/` as the content root.
 
 | Layer | Root | Used for | Example |
 |-------|------|----------|---------|
-| MCP / filesystem | vault **repo** | `write_note`, `read_note`, `patch_note`, file I/O | `wiki/projects/surgut/Tasks/foo.md` |
+| MCP (`repo-bound`) | vault **repo** | `write_note`, `read_note`, `patch_note` | `wiki/projects/surgut/Tasks/foo.md` |
+| Local filesystem | approved absolute **wiki** root | file I/O | `<local_root>/projects/surgut/Tasks/foo.md` |
 | Wiki semantic | `wiki/` | wikilinks, Dataview, drafts shown to user | `[[projects/surgut/Tasks/foo]]` |
 
-**Hard rule for MCP tool paths:**
+**Hard rule for default `repo-bound` MCP tool paths:**
 - Wiki pages → path **must** start with `wiki/`
 - Never call `write_note` with bare `projects/...` — that creates files at
   repo root (`<repo>/projects/...`) instead of `<repo>/wiki/projects/...`
@@ -35,29 +36,100 @@ optional `onboarding-harness` diagnostic) reports `wiki-bound` — then omit the
 `wiki/` prefix. Do not probe on every research run; probe after a path error or
 immediately before write when binding is unknown.
 
-## Vault Path Resolution
+<!-- vault-access:start -->
+## Shared access protocol
 
-If the vault location must be resolved manually (e.g., file I/O fallback):
-1. **Ask mcpvault** — `list_directory("/")` (optional `get_vault_stats` only when
-   diagnosing); confirm `wiki` appears as a top-level directory (`repo-bound`)
-2. **Default macOS path** — `~/Development/obsidian-vault/` (repo);
-   wiki content under `wiki/`
-3. **Ask user** — if neither works
+Load only on MCP unavailability or an uncertain write. Package-local copies are
+generated from this canonical source by `scripts/sync-vault-access.py`.
 
-Do not use `/srv/cloud/obsidian` as a **Mac file I/O fallback** (remote host
-path). The live remote mcpvault server may still bind there — that is fine;
-clients talk over MCP, not local paths.
+### Task context
 
-## Fallback (mcpvault unavailable)
+Accept and forward an optional `vault_access` context through nested calls and
+research dispatches. Initialize it once when absent:
 
-Use absolute file I/O against the Mac clone:
-- `read ~/Development/obsidian-vault/wiki/projects/<p>/Entities/foo.md`
-- `write ~/Development/obsidian-vault/wiki/projects/<p>/Entities/foo.md`
-- `glob ~/Development/obsidian-vault/wiki/**/*.md`
+```json
+{"mode":"mcp","local_root":null,"local_consent":"pending"}
+```
 
-Never write cwd-relative `projects/...` (lands in the wrong repo).
+- `mode`: `mcp`, `local`, or `skip`.
+- `local_root`: absolute path to the local **wiki content directory**, or null.
+  Keep this distinct from the MCP binding (`mcp-mode`).
+- `local_consent`: `pending`, `approved`, `declined`, or `unavailable`.
 
-Note in output: "mcpvault unavailable — using file I/O fallback"
+Retain the selected backend, root, consent, and failure/skip reason for the
+current task. Forward them to every downstream call, including vault-index.
+Reuse existing requester authorization for the same local vault and task;
+approval is not inferred from the vault's mere existence. Honor an existing
+`skip` decision without retrying MCP or asking again. A later explicit requester
+instruction can change the decision. An existing `mode=local` with approved
+consent uses that root directly, without another MCP attempt or consent question.
+
+### Select access
+
+1. Prefer MCP and start with a real task operation. Do not issue availability
+   probes. Missing MCP tools or a connection/service failure triggers fallback.
+   Empty search results do not. A missing note/path or invalid tool argument
+   alone is not evidence that MCP is down; resolve it within the selected backend.
+2. On MCP unavailability, check the known local path from task/configuration,
+   then `~/Development/obsidian-vault/wiki/`. Expand `~` to an absolute path.
+   A known vault repository path maps to its `wiki/` child; an explicit wiki
+   root is used directly. Check directory existence/access metadata only at
+   this point; do not read note content or write anything before consent.
+3. If a usable local wiki directory exists and consent is pending, the
+   user-facing agent asks once, in the requester's language:
+   "mcpvault is unavailable. Use the local vault `<absolute-wiki-root>` for
+   the current task?" Wait for the answer before local content access.
+   Under nexus, the parent asks; a child returns the candidate absolute path
+   and a request for parent-mediated approval in `gaps`, then waits for/resumes
+   with the parent's updated context. This is not a final skip while the
+   parent's question is pending. Do not independently ask from nested calls.
+4. On agreement, select `mode=local`, `local_consent=approved` and the absolute
+   `local_root`. Run searches with `rg`/file listing under this root, read notes
+   from it, and apply approved writes to it. Keep the same backend for pages,
+   indexes, log entries, and verification; do not switch back silently.
+5. On refusal, select `mode=skip`, `local_consent=declined`. If no usable copy
+   exists or it is inaccessible, select `mode=skip`, `local_consent=unavailable`.
+   Record the reason and skip vault operations; continue independent work.
+   Do not clone/create a vault, scan unrelated directories, or repeatedly ask
+   for a path. If approved local access later fails, report the limitation and
+   skip affected operations rather than restarting the consent loop.
+
+Local fallback remains vault evidence; it does not open the external-source
+gate. Explicitly disclose local use and any known freshness limitation without
+claiming it is synchronized with the remote vault. For JSON-only research,
+record access mode/limitations in `gaps` while preserving the existing output
+shape. Successful local coverage can be `success`; limited coverage is
+`partial`; wholly unavailable/skipped access is `failed` with the reason.
+An approval-pending child retains findings already gathered and returns
+`partial` if coverage exists, otherwise `failed`, with an actionable gap so its
+parent can obtain the answer and resume only that track. Empty results remain
+`success` with topic gaps.
+
+### Local paths
+
+Local path = `<absolute-local-wiki-root>/<wiki-semantic-path>` (include `.md`
+for files). Never append a second `wiki/` component or write cwd-relative
+`projects/...`. The local root is independent of MCP `repo-bound`/`wiki-bound`.
+Do not use remote server paths such as `/srv/cloud/obsidian` as Mac file paths.
+
+Local-access consent does not approve draft contents or override filesystem
+permissions. Preserve draft approval, Wiki Purity, read-before-update,
+duplicate checks, index maintenance, and read-back verification on both backends.
+
+## Write recovery
+
+After a failed/timeout write, first account for completed, pending, and uncertain
+page/index/log mutations. Read affected targets before any retry; append only
+missing entries. A local clone is not proof of the remote write's outcome.
+Do not replay uncertain remote mutations locally or synchronize backends
+automatically. If completion cannot be established, report partial/unverified
+state and skip affected mutations while independent work continues. Confirm
+the target and intended approved contents before repairing a misplaced page;
+do not blindly delete/rewrite. The page writer verifies pages; vault-index
+verifies index/log updates and returns its result. Reuse verified results until
+another mutation; report success only when all affected targets are verified.
+
+<!-- vault-access:end -->
 
 ## Path table
 

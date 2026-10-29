@@ -37,7 +37,13 @@ topics: [...]
 ticket_ids: [...]
 allow_external: {true|false}
 mcp-mode: repo-bound
+vault_access: {mode: mcp|local|skip, local_root: null|absolute-wiki-root, local_consent: pending|approved|declined|unavailable}
 ```
+
+On MCP unavailability, load this skill's bundled fallback (linked from `SKILL.md`).
+The parent owns the local-fallback question. Children forward access changes or
+approval needs in `gaps`; the parent retains the context and resumes only the wiki
+track after answering, preserving completed work from the other track.
 
 ## Compact prompts (generalPurpose fallback only)
 
@@ -63,12 +69,17 @@ Wiki research via vault-query (batch once). No code. Vault-only unless allow_ext
 mcp-mode: repo-bound (wiki/ MCP prefix).
 
 project: {project}; entities: [...]; topics: [...]; ticket_ids: [...]; allow_external: {true|false}
+vault_access: {mode, local_root, local_consent} (forward to vault-query)
 
 1) Read index.md  2) vault-query once for full question list  3) backlinks if needed
 
 Return ONLY JSON:
 {"status":"success|partial|failed","findings":[{"fact":"...","source":"wiki:<path>","date":"YYYY-MM-DD"}],"gaps":["..."]}
-MAX 10. Within-wiki conflict: both dated claims + gap (no winner). Empty=success+gaps. MCP down=failed.
+MAX 10. Within-wiki conflict: both dated claims + gap (no winner). Empty=success+gaps.
+Follow shared vault access handling on MCP failure; parent asks about local use.
+Approved local coverage can succeed. Limited coverage=partial; wholly unavailable/
+skipped access=failed+reason in gaps. Return approval needs/access changes and
+local-use/freshness limitations in gaps; never read local content before consent.
 ```
 
 Phase 3: load `code-exploration-prompt.md`; required type `explore`.

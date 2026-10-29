@@ -61,8 +61,27 @@ requester approves. New wiki content must pass Wiki Purity: do not add
 external-staging links, source queues, or lifecycle markers. Existing
 historical artifacts remain lint-only `[LEGACY]` findings.
 
+Session captures include changed files (repository, relative path, change and
+purpose), adopted decisions with rationale, and work results with checks actually
+run, limitations, and remaining work. Keep these details in a Task page; link
+independently significant Decision pages. Direct file/diff/command observations
+use `tool:` evidence. The save reply contains status and page links only.
+
 Wikilinks are wiki-semantic (`[[projects/<p>/Entities/<name>]]`); in
 repo-bound mode MCP file paths start with `wiki/`.
+
+If mcpvault tools are missing or the connection fails, check for an existing local
+vault and ask before reading its contents or writing to it. The parent handles
+this question once per task and shares the selected backend, absolute wiki root,
+and consent through `vault_access`. On refusal or no usable local copy, record
+the reason, skip vault operations, and continue independent work. No clone or
+vault creation is automatic. Detailed fallback instructions load only on MCP
+unavailability. Each affected skill bundles its own copy so selective installs
+remain portable; the [canonical protocol](skills/vault-write/references/mcpvault.md)
+is maintained in one place. After editing it, run
+`python3 scripts/sync-vault-access.py`; use `--check` to detect stale copies.
+`vault-index` verifies index/log writes once and returns the result to the page
+writer, which verifies only its pages.
 
 ## Install
 
@@ -93,7 +112,8 @@ cp /Users/quetan/Development/nexus/.cursor/agents/nexus-*.md ~/.cursor/agents/
 ## Requirements
 
 - A `mempalace` MCP server for MemPalace research.
-- An `mcpvault` MCP server for wiki operations.
+- An `mcpvault` MCP server for wiki operations, or an existing local vault
+  explicitly approved for the task when MCP is unavailable.
 - An Obsidian vault whose semantic content root is `wiki/`, for example
   `~/Development/obsidian-vault/wiki/`.
 

@@ -113,6 +113,7 @@ Before committing, run:
 
 ```bash
 git diff --check
+python3 scripts/sync-vault-access.py --check
 skills-ref validate skills/*/SKILL.md
 npx skills add /Users/quetan/Development/nexus --list
 ```

@@ -3,9 +3,10 @@
 ## Flow
 
 1. Resolve project scope (auto or ask)
-2. Read vault `wiki/index.md` (MCP path) → list candidate pages
-3. For each key term: `search_notes(query, limit=10)`
-4. For 2-5 central pages: `search_notes(query="<title>", searchContent=true)` or file I/O grep for `[[<basename>]]`
+2. Read vault index via the selected backend → list candidate pages
+3. For each key term: MCP `search_notes(query, limit=10)` or approved local search
+4. For 2-5 central pages: MCP title/content search or, in approved local
+   mode, search `[[<basename>]]` under the selected local wiki root
 5. Adaptively read relevant notes (entities → concepts → decisions → sources)
    - Read at most 5 pages in full
    - Additional matches: title + first paragraph only
@@ -31,15 +32,20 @@ For a batch call from `research-wiki`, return this JSON contract:
 
 - Process all `questions[]` in one invocation; batch setup does not reduce
   per-topic depth.
-- Cap `findings[]` at 10. Use `failed` only when the vault is unavailable and
-  `partial` only when coverage is limited. Empty results are `success` with gaps.
+- Cap `findings[]` at 10. Completed MCP/local coverage is `success`; limited
+  coverage is `partial`; wholly unavailable/skipped access is `failed` with a
+  reason in `gaps`. Empty results are `success` with topic gaps.
 - Preserve both dated claims for a within-wiki conflict and add a gap requesting
   requester resolution. Do not emit a selected winner.
 - Wikilinks omit `wiki/`; MCP paths use `wiki/...`.
 
 ## mcpvault Fallback
 
-If mcpvault is down: file I/O under `~/Development/obsidian-vault/wiki/`. Note fallback in output.
+On MCP unavailability, use the bundled fallback linked from this skill's `SKILL.md`.
+Forward `vault_access`; obtain task-scoped consent before local content access.
+Under nexus, return approval needs to the parent, which asks and resumes the
+track. Record local use/known limitations in `gaps` for JSON results, or briefly
+in standalone prose. Reuse access decisions on subsequent calls.
 
 ## Source gate and conflict gate
 

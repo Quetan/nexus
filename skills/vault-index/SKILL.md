@@ -1,15 +1,22 @@
 ---
 name: vault-index
-compatibility: Requires mcpvault MCP.
+compatibility: mcpvault MCP, or an existing local vault with requester consent.
 description: >
-  Use when updating vault index.md, log.md, or projects/<p>/00_Index.md after
+  Use when updating vault index.md, log.md, or projects/{project}/00_Index.md after
   vault-write operations. Called automatically by vault-write. Standalone use:
   when manually fixing index drift or log entries. Wikilinks omit `wiki/`
   prefix; MCP paths use `wiki/log.md`, `wiki/index.md`,
-  `wiki/projects/<p>/00_Index.md`.
+  `wiki/projects/{project}/00_Index.md`.
 ---
 
 # vault-index
+
+## Vault access
+
+Reuse `vault_access` (mode, absolute wiki root, consent); otherwise use MCP without pings.
+On missing tools or connection failure, read the bundled [local fallback](references/vault-access.md)
+once per agent context. Inherited `local` reuses its approved root; `skip` records
+the reason and skips vault operations. Under nexus, the parent owns local consent.
 
 ## What it does
 
@@ -20,9 +27,14 @@ Maintain the wiki catalog and chronology:
 ## Process
 
 1. **Update indexes** — MCP targets: `wiki/log.md`, `wiki/index.md`,
-   `wiki/projects/<p>/00_Index.md` (never bare `log.md` / `projects/...` at MCP root)
+   `wiki/projects/{project}/00_Index.md` (never bare `log.md` / `projects/...` at MCP root)
 2. **Classify pages** — append typed wiki-page links under the matching section
    of `00_Index.md`; never create source queues or lifecycle markers.
+3. **Verify** — own the index/log read-back through the selected backend;
+   return verified wiki-semantic paths and failed/unverified updates to the caller.
+   Read each affected target once after its final append. Repeat only for an
+   unresolved failure or a later mutation. On uncertainty, load bundled
+   [write recovery](references/vault-access.md#write-recovery) before retrying.
 
 ### log.md entry
 
@@ -51,7 +63,7 @@ MCP write: `wiki/index.md`
 ### 00_Index.md
 
 Same format as `index.md`, scoped to project. Create `# <Project> Index` if
-missing. Read before append. MCP path: `wiki/projects/<p>/00_Index.md`.
+missing. Read before append. MCP path: `wiki/projects/{project}/00_Index.md`.
 
 ```markdown
 # <Project> Index
@@ -75,10 +87,13 @@ missing. Read before append. MCP path: `wiki/projects/<p>/00_Index.md`.
 
 ## Input
 
-- Command, description, wiki-semantic page paths + display names, project slug
+- Command, description, created/updated wiki-semantic page paths + display names,
+  project slug, and optional `vault_access` inherited from the caller
 
 ## Constraints
 
+- Use the caller's backend/root for every read and append; in local mode resolve
+  wiki-semantic paths under the approved absolute wiki root.
 - Append only
 - Check duplicates before append
 - Wikilinks: wiki-semantic. MCP wiki files: `wiki/...`

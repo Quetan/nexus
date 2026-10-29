@@ -13,6 +13,7 @@
 |-----|---------|-------|
 | `user:` | Direct user statement | Safe to write as fact |
 | `vault:` | From wiki lookup | Include source wikilink |
+| `tool:` | Directly observed file, diff, or command result | Cite the repository/path or command and observed result |
 | `UNVERIFIED` | Agent inference | Never write as fact |
 
 ## Page Type Decision
@@ -28,9 +29,35 @@ Pick exactly one type per page before drafting:
 | **Topic** | stable, dateless hub grouping concepts | `library/<Topic>/00_Index` |
 
 Rules:
-- One session may produce multiple pages — split by type, never mix.
+- One session may produce multiple pages — use one type per page. A Task page
+  may summarize work and link to independently significant Decision pages.
 - Decision/Task file names include date suffix `DD-MM-YYYY`; Entity/Concept/Topic do not.
 - Concepts get `date:` in frontmatter (auto-add if missing). Topics never carry `date`.
+
+## Session work capture
+
+For session work, create or update a Task page with these three sections in the
+requester's language. Keep them in the note; the final reply contains status and
+page links only.
+
+- **Changed files** — repository identifier, repository-relative path, change
+  kind (added/modified/deleted/renamed), and purpose. Use session actions and
+  observed diffs/files to identify this task's changes. A dirty working tree
+  alone does not establish authorship; exclude unrelated changes. When no files
+  changed, say so explicitly; if evidence is unavailable, state that limitation.
+- **Adopted decisions** — chosen approach and rationale. Label proposals and open
+  questions separately. Say when no new decisions were adopted. Link to separate
+  Decision pages for independently significant choices, avoiding duplicated detail.
+- **Work results** — completed work, checks actually run and their observed
+  outcomes, limitations, and remaining work. Distinguish passed, failed, and
+  unrun checks; do not turn planned work into completed work.
+
+Support observed changes and check outcomes with `tool:` evidence (file/diff or
+command and result). Use `user:` for explicit requester decisions; an observed
+implementation can establish the approach taken without implying user approval.
+For pasted files, URLs, and other external material, require these sections only
+when the capture also includes session work. Preserve the existing page types
+for material-only captures.
 
 ## Draft Format
 
@@ -62,6 +89,7 @@ related: []
 |-------|-----|----------|
 | ... | user: | direct user statement |
 | ... | vault: | [[projects/<p>/Entities/foo]] / palace drawer `<id>` |
+| ... | tool: | repository/path + observed diff, or command + result |
 | ... | UNVERIFIED | — |
 ```
 
@@ -71,16 +99,20 @@ related: []
 2. Show the **wiki-semantic** path and full draft for every page
    (example: `projects/<p>/Tasks/foo-11-08-2026`).
 3. Wait for `save`, `edit`, or `skip`.
-4. On `save` (MCP mode `repo-bound`, the default):
-   - MCP path = `wiki/` + draft path + `.md`
-     → `write_note(path="wiki/projects/<p>/Tasks/foo-11-08-2026.md", ...)`
-   - **Never** `write_note(path="projects/...")` — creates files at repo root
-   - Call `vault-index` with: command=`write`, description, list of created
-     pages (wiki-semantic paths), project slug
-   - Read back via MCP path `wiki/...` to verify
-   - If the note is missing under `wiki/` or appeared under bare `projects/`
-     at MCP root → treat as failure; delete the misplaced file if present;
-     rewrite with the `wiki/` prefix
+4. On `save`, reuse the selected `vault_access` backend:
+   - MCP `repo-bound` (default): `wiki/` + draft path + `.md`, e.g.
+     `write_note(path="wiki/projects/<p>/Tasks/foo-11-08-2026.md", ...)`.
+     Never use bare `projects/...` in this mode. Confirmed `wiki-bound` MCP
+     omits the prefix; local mode uses `<absolute-local-wiki-root>/<draft-path>.md`.
+   - Read existing targets before updating; preserve unrelated content.
+   - Call `vault-index` with command=`write`, description, created/updated pages
+     (wiki-semantic paths), project slug, and the same `vault_access` context.
+   - Read back every created/updated page through the selected backend.
+     `vault-index` owns index/log read-back; use its verified-path and failure
+     summary without repeating those reads. Mark capture complete only when
+     every expected page and index/log update is verified.
+   - On a write failure, uncertain completion, or misplaced page, follow shared
+     recovery rules before retrying; report partial/unverified work explicitly.
 
 ## Rejections
 
@@ -99,5 +131,7 @@ artifacts.
 
 ## Post-save
 
+- Reply with save status and links to verified pages only. State partial or
+  unverified saves honestly; do not repeat changed files, decisions, or results.
 - Update indexes only with typed wiki-page links.
 - Do not create source queues, caches, or staging references.

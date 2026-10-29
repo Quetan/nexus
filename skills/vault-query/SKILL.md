@@ -1,15 +1,22 @@
 ---
 name: vault-query
+compatibility: mcpvault MCP, or an existing local vault with requester consent.
 description: >
   Use when answering questions from the Obsidian LLM Wiki — even if the user
   doesn't name the wiki explicitly. Triggers on "спроси вики", "what does the
   wiki say", "look up in vault", "найди в базе знаний". Returns answers with
   full-path wikilink citations. Vault-only by default. Do NOT use for MemPalace
   queries, web searches, codegraph lookups, or non-wiki knowledge bases.
-compatibility: mcpvault MCP
 ---
 
 # vault-query
+
+## Vault access
+
+Reuse `vault_access` (mode, absolute wiki root, consent); otherwise use MCP without pings.
+On missing tools or connection failure, read the bundled [local fallback](references/vault-access.md)
+once per agent context. Inherited `local` reuses its approved root; `skip` records
+the reason and skips vault operations. Under nexus, the parent owns local consent.
 
 ## What it does
 
@@ -21,6 +28,7 @@ citations. Medium-depth vault research — not a full research workflow.
 - Single question, OR
 - Batch: `questions[]` (from research-wiki) plus `allow_external` — processed
   sequentially in one invocation and returned as one structured result
+- Optional `vault_access` — shared task access context; forward it to nested calls
 
 ## References
 
@@ -30,9 +38,10 @@ Load when needed:
 ## Process
 
 1. **Resolve project scope** — auto (cwd/git/manifest) or ask if ambiguous
-2. Read `wiki/index.md` (MCP) → list candidate pages
-3. For each key term: `search_notes(query, limit=10)`
-4. For 2-5 central pages: `search_notes(query="<title>", searchContent=true)` or file I/O grep for `[[<basename>]]`
+2. Read `wiki/index.md` through the selected backend → list candidate pages
+3. For each key term: MCP `search_notes(query, limit=10)` or approved local search
+4. For 2-5 central pages: MCP `search_notes(query="<title>", searchContent=true)`
+   or, in approved local mode, search `[[<basename>]]` under the local wiki root
 5. Adaptively read relevant notes (entities > concepts > decisions > sources)
    - Explicit MCP paths under `wiki/`; read ≤5 pages in full; else title + first paragraph
    - Need more depth? Record a gap and ask whether to expand budget
@@ -62,8 +71,11 @@ For a batch call from `research-wiki`, return JSON only:
 }
 ```
 
-Cap batch findings at 10. `failed` means the vault source is unavailable;
-`partial` means coverage was limited; an empty result is `success` with gaps.
+Cap batch findings at 10. Completed local or MCP coverage is `success`; limited
+coverage is `partial`; wholly unavailable/skipped access is `failed` with the
+reason in `gaps`. Empty results are `success` with topic gaps. Record local use
+and known freshness limitations in `gaps`. For approval-pending delegated work,
+follow the parent handoff in the shared vault access protocol.
 For a within-wiki conflict, retain both dated claims in `findings[]`, add a gap
 that requester resolution is required, and do not select a winner.
 

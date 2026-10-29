@@ -12,9 +12,18 @@ No code. Vault-only unless parent set `allow_external: true`.
 Default mcp-mode: repo-bound (`wiki/` MCP path prefix).
 
 Parent provides: project, entities[], topics[], ticket IDs, allow_external,
-mcp-mode.
+mcp-mode, optional vault_access (mode, absolute local wiki root, consent).
+
+Reuse vault_access; load vault-query's bundled fallback only on MCP unavailability.
+Forward vault_access to vault-query. On MCP failure, return candidate local
+root/approval needs in gaps to the parent, which asks the requester and resumes
+this track with updated context. Do not ask independently or read local content
+before consent. Reuse approved/declined access for the task.
 
 Return **only** JSON:
 `{"status":"success|partial|failed","findings":[{"fact":"...","source":"wiki:<path>","date":"YYYY-MM-DD"}],"gaps":["..."]}`
 MAX 10 plan-relevant findings. Within-wiki conflicts: both dated claims + gap
-(requester must resolve). Empty → success with gaps. MCP down → failed.
+(requester must resolve). Empty → success with gaps. Completed MCP/local coverage → success; limited
+coverage → partial; wholly unavailable/skipped access → failed with reason in
+gaps. Return access changes, local use and known freshness limitations in gaps;
+keep the JSON shape unchanged.

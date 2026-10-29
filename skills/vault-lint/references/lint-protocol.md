@@ -1,7 +1,9 @@
 # Lint Protocol — Wiki Health Check
 
 Wikilinks/Dataview: wiki-semantic (`projects/`, `library/`, …). MCP explicit
-paths: `wiki/...`. File I/O: under `wiki/`.
+paths: `wiki/...`. Approved local file I/O: under `vault_access.local_root`.
+Reuse task consent and the selected backend. On MCP unavailability, use the
+bundled fallback linked from this skill's `SKILL.md`.
 
 ## Checks
 
@@ -45,9 +47,12 @@ paths: `wiki/...`. File I/O: under `wiki/`.
 - Severity: ERROR
 
 ### Misplaced repo-root projects/ (path sanity)
-- If `list_directory("projects")` finds paths outside `wiki/projects/`:
+- In MCP `repo-bound` mode, if `list_directory("projects")` finds paths outside
+  `wiki/projects/` (in local mode inspect the known vault repo's `projects/`
+  directory metadata only; report checks outside available scope as not performed):
   - `[ERROR] Misplaced pages outside wiki/: projects/...`
-- Fix: rewrite under `wiki/projects/...`, delete orphan
+- Report the misplaced path for a separately approved repair; lint never moves,
+  rewrites, or deletes pages.
 - Severity: ERROR
 
 ### Archived Page Path (Convention 0.4)
@@ -104,7 +109,9 @@ paths: `wiki/...`. File I/O: under `wiki/`.
 
 ## Log Update
 
-Append entry to `wiki/log.md` (MCP) using wiki-semantic wikilinks:
+Append to `wiki/log.md` through MCP or `<local_root>/log.md` in approved local
+mode, using wiki-semantic wikilinks; read back the entry to verify. Apply shared
+write recovery on uncertainty; skipped access performs no log write:
 
 ```
 ## [YYYY-MM-DD] HH:MM — lint — <summary>
