@@ -29,7 +29,9 @@ Returns wikilink-cited findings for the research task.
 - **Task scope**: `entities[]` — process the full list in **one** invocation
   (never one Task/dispatch per entity)
 - **External-source gate**: `allow_external` false unless requester authorizes
-- **Invocation**: medium/full → one Task (`nexus-wiki` or `generalPurpose`);
+- **Invocation**: medium/full → one `nexus-wiki` agent with its runtime's
+  configured research model; use a generic agent only under the nexus fallback
+  rules;
   light → parent runs this skill inline
 - **mcp-mode**: default `repo-bound` (`wiki/` MCP prefix)
 - **vault_access**: optional shared backend/root/consent context from the parent;

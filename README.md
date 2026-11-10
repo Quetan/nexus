@@ -35,9 +35,15 @@ graph TD
 
 Session start assumes MCP is available and defaults to `mcp-mode=repo-bound`.
 No mandatory availability ping. Manifest lookup runs only when project/rooms are
-ambiguous. Medium/full Phase 2a uses parallel Task agents (`nexus-mempalace` +
-`nexus-wiki`, fallback `generalPurpose`). Phase 3 uses Task `explore`. Light
-runs one research track inline on the parent.
+ambiguous. Medium/full Phase 2a uses the parallel `nexus-mempalace` and
+`nexus-wiki` agents, each on the model configured for that runtime. Codex uses
+GPT-6 Luna High, Cursor uses standard Composer 2.5, and Claude Code uses Haiku
+at its default effort. The parent session model performs synthesis and writes
+the final plan. If a named agent cannot launch, run only its missing track on
+the parent model and note the fallback. If the client substitutes a model, keep
+usable results and record the actual model when available. Phase 3 uses the
+runtime's code-exploration agent. Light runs one research track inline on the
+parent.
 `research-plan` emits the only final user-facing response — plain language in the
 requester's locale, without file paths, source citations, or shell commands.
 Instruction prose and inter-skill handoffs remain English with full technical
@@ -98,7 +104,15 @@ npx skills add /Users/quetan/Development/nexus -g -a cursor -y
 # Optional: mirror Phase 2a Task agents for all projects
 mkdir -p ~/.cursor/agents
 cp /Users/quetan/Development/nexus/.cursor/agents/nexus-*.md ~/.cursor/agents/
+
+# Optional: mirror Phase 2a agents for all projects in Claude Code
+mkdir -p ~/.claude/agents
+cp /Users/quetan/Development/nexus/.claude/agents/nexus-*.md ~/.claude/agents/
 ```
+
+Codex project agents are loaded from `.codex/agents/`. When installing only the
+skills elsewhere, copy the two profiles for the chosen runtime into its
+user-level agent directory as well.
 
 ## Usage
 

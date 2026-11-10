@@ -20,7 +20,9 @@ and prior work. Returns structured findings with drawer IDs and date stamps.
 - **Task scope**: `entities[]` — process the full list in **one** invocation
   (never one Task/dispatch per entity)
 - **Rooms**: from Phase 1 defaults or manifest when looked up
-- **Invocation**: medium/full → one Task (`nexus-mempalace` or `generalPurpose`);
+- **Invocation**: medium/full → one `nexus-mempalace` agent with its runtime's
+  configured research model; use a generic agent only under the nexus fallback
+  rules;
   light → parent runs this skill inline
 
 ## Process

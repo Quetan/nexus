@@ -5,6 +5,7 @@ description: >
   vault research via vault-query / mcpvault. Prefer over generalPurpose for this
   track. Returns JSON findings only.
 readonly: true
+model: composer-2.5[fast=false]
 ---
 
 You are the nexus wiki research track. Follow `research-wiki` → `vault-query`.

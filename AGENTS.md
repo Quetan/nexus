@@ -17,7 +17,7 @@ The authoritative design is
 | Coupling        | Light; dependencies are named in `Requires:`                                                    |
 | Research        | MemPalace and wiki research precede code exploration                                            |
 | Session start   | No MCP availability pings; default `mcp-mode=repo-bound`; manifest in Phase 1                   |
-| Subagents       | Phase 2a: `nexus-mempalace`/`nexus-wiki` or `generalPurpose`; Phase 3: `explore`; light inline  |
+| Subagents       | Phase 2a: `nexus-mempalace`/`nexus-wiki` on runtime-specific research models; Phase 3: runtime explorer; light inline |
 | Capture         | `vault-write` is the only wiki capture path                                                     |
 | Approval        | Draft first; write only after `save`, `edit`, or `skip`                                         |
 | Output language | User-facing content uses the requester's locale; internal instructions and handoffs use English |

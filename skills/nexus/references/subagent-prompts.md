@@ -4,15 +4,26 @@ Load **only** when dispatching medium/full Phase 2a (not for light inline).
 
 ## Dispatch rules
 
-| Track         | Prefer `subagent_type`                                       | Fallback         | Forbidden |
-| ------------- | ------------------------------------------------------------ | ---------------- | --------- |
-| A — MemPalace | `nexus-mempalace` (`.cursor/agents/` or `~/.cursor/agents/`) | `generalPurpose` | `explore` |
-| B — Wiki      | `nexus-wiki`                                                 | `generalPurpose` | `explore` |
+| Track         | Named role and model profile | Generic fallback | Forbidden |
+| ------------- | ---------------------------- | ---------------- | --------- |
+| A — MemPalace | `nexus-mempalace`             | `generalPurpose` | `explore` |
+| B — Wiki      | `nexus-wiki`                  | `generalPurpose` | `explore` |
 
-- Launch **two** Task calls in **one** parent message.
+- Launch **two** named research agents in parallel for medium/full tiers.
+- Use the runtime's native model profile for each named role. Codex uses
+  `gpt-6-luna` with high reasoning effort, Cursor uses standard
+  `composer-2.5[fast=false]`, and Claude Code uses `haiku` at its default effort.
+- Keep synthesis, research brief, and final plan in the parent session so they
+  use the model selected for the task.
 - One Task per track; batch all entities inside that Task.
 - Custom agents already know the skill contract — send **scope payload only**
   (below). Do not paste the full skill body into the Task prompt.
+- If the named role is unavailable, use a generic agent only when the runtime
+  lets the parent select a separate model. If no separate model can be selected
+  or the launch fails, run only that missing track inline/on the parent model.
+  Keep the completed track and record the fallback in the internal handoff.
+- If the runtime reports that it substituted a model, keep usable findings and
+  record the actual model in the internal handoff. Do not rerun that track.
 - Fallback `generalPurpose`: send the compact prompt template for that track.
 - Never use `explore` for MCP research.
 

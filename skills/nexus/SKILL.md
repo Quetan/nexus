@@ -100,11 +100,16 @@ Load when needed:
 | Tier / phase | Mechanism | `subagent_type` |
 | --- | --- | --- |
 | light / one track | Parent skill inline — **no Task** | — |
-| medium·full / 2a | 2× Task parallel | Prefer `nexus-mempalace` + `nexus-wiki`; fallback `generalPurpose`; never `explore` |
-| medium·full / 3 | 1× Task | **`explore`** |
+| medium·full / 2a | 2× named research agent, parallel | `nexus-mempalace` + `nexus-wiki`; runtime-specific model profiles; never `explore` |
+| medium·full / 3 | 1× runtime code-exploration agent | Use the client's built-in read-only explorer |
 | 2b / 4 / 5 | Parent + skill — no Task | — |
 
 Medium/full: dispatch A+B in one message. No code in Phase 2a (except 1–2 peek files).
+Use each runtime's model profile for these named roles. Generic fallbacks may
+use a separate model only when the runtime supports selecting one. Otherwise run
+only the unavailable track on the parent model and record the fallback. Keep
+usable results when a runtime substitutes a model and record the actual model
+when reported. All synthesis and plan-generation phases run on the parent model.
 Pass `vault_access` to the wiki track; resolve local consent in the parent and
 resume only that track, preserving MemPalace results (see subagent prompts).
 Reuse access decisions for capture/lint/index; record skips and continue independent steps.

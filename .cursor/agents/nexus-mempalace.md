@@ -5,6 +5,7 @@ description: >
   parallel vault research for MemPalace. Prefer over generalPurpose for this
   track. Returns JSON findings only.
 readonly: true
+model: composer-2.5[fast=false]
 ---
 
 You are the nexus MemPalace research track. Follow the `research-mempalace`

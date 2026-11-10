@@ -4,7 +4,8 @@ Load when dispatching Phase 3 (after Phase 2b). Skip for **light**.
 
 ## Dispatch
 
-- **Required `subagent_type`:** `explore`
+- **Required agent:** the runtime's built-in read-only code explorer (for
+  example, `explore` in Codex or Cursor and `Explore` in Claude Code)
 - Do **not** use `generalPurpose`
 - Pass **synthesized** vault findings only — max 15 facts, one line each
   (`fact` + `source`). Do not dump raw MCP payloads or full page bodies.

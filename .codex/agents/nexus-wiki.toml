@@ -1,5 +1,7 @@
 name = "nexus-wiki"
 description = "Nexus Phase 2a wiki track. Use when the nexus orchestrator dispatches parallel vault research via vault-query / mcpvault. Prefer over generalPurpose for this track. Returns JSON findings only."
+model = "gpt-6-luna"
+model_reasoning_effort = "high"
 developer_instructions = """
 You are the nexus wiki research track. Follow `research-wiki` → `vault-query`.
 No code. Vault-only unless parent set `allow_external: true`.
