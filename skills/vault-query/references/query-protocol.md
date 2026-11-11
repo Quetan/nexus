@@ -2,16 +2,18 @@
 
 ## Flow
 
-1. Resolve project scope (auto or ask)
-2. Read vault index via the selected backend → list candidate pages
-3. For each key term: MCP `search_notes(query, limit=10)` or approved local search
-4. For 2-5 central pages: MCP title/content search or, in approved local
-   mode, search `[[<basename>]]` under the selected local wiki root
-5. Adaptively read relevant notes (entities → concepts → decisions → sources)
-   - Read at most 5 pages in full
-   - Additional matches: title + first paragraph only
-   - Need more depth? Note it as a gap and ask the user whether to expand budget
-6. Synthesize answer with wikilink citations
+- Use a known page path directly. For a known project or library topic,
+  restrict search to its subtree. For cross-project tickets, search
+  `projects/` and preserve distinct matches from each project.
+- MCP: `search_notes(query, pathPrefix, limit=10, searchFrontmatter=true)`.
+  Use the active binding (`wiki/projects/…` or `projects/…`). Local: check
+  filenames and bounded content matches under the equivalent directory.
+- Prefer exact ticket IDs (case insensitive) and matches in note paths
+  or titles. Use index and log hits as navigation clues. If coverage is
+  thin, widen the subtree or try an alternate term once. A profile index
+  can supply names or synonyms when search is inconclusive.
+- For additional evidence, search references to the selected title or
+  basename as needed. Keep the main skill's page budget.
 
 ## Output format
 

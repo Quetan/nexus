@@ -31,7 +31,7 @@ changes. Appends a summary entry to vault `log.md`.
 | Staleness | Pages not updated > 90 days |
 | Contradictions | Pages claiming conflicting facts about the same entity |
 | Coverage gaps | Topics mentioned in log but no dedicated page |
-| Index drift | Pages not listed in index.md or project 00_Index.md |
+| Index drift | Missing navigation links or notes absent from their profile index |
 | Broken wikilinks | `[[links]]` that don't resolve to existing pages |
 | Legacy Wiki Purity | Existing external-staging links, `Raw Sources` headings, or ingest-status markers |
 | Stale `wiki/` prefix | `[[wiki/...]]` in **content** (not MCP tool args) |

@@ -135,9 +135,10 @@ another mutation; report success only when all affected targets are verified.
 
 | Scope | Wikilink / draft path | MCP / filesystem path |
 |-------|----------------------|------------------------|
-| Global index | `index.md` | `wiki/index.md` |
+| Home navigation | `index` | `wiki/index.md` |
 | Log | `log.md` | `wiki/log.md` |
-| Project index | `projects/<p>/00_Index.md` | `wiki/projects/<p>/00_Index.md` |
+| Project index | `projects/<p>/00_Index` | `wiki/projects/<p>/00_Index.md` |
+| Library topic index | `library/<Topic>/00_Index` | `wiki/library/<Topic>/00_Index.md` |
 | Project Entity | `projects/<p>/Entities/<name>` | `wiki/projects/<p>/Entities/<name>.md` |
 | Project Concept | `projects/<p>/Concepts/<name>` | `wiki/projects/<p>/Concepts/<name>.md` |
 | Project Decision | `projects/<p>/Decisions/<slug-DD-MM-YYYY>` | `wiki/projects/<p>/Decisions/<slug-DD-MM-YYYY>.md` |

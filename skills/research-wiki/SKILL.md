@@ -39,13 +39,10 @@ Returns wikilink-cited findings for the research task.
 
 ## Process
 
-1. Read vault `index.md` through the selected backend → candidate pages
-2. Call `vault-query` **once** (batch) for the full question list, forwarding
-   `vault_access`. An approval-pending parent handoff may resume the same batch.
-3. For cross-cutting topics: backlinks via
-   MCP `search_notes(query="<title>", searchContent=true)` or, in approved
-   local mode, search `[[<basename>]]` under the selected local wiki root
-4. Collect findings with wiki path, date, content summary
+1. Call `vault-query` **once** (batch) for the full question list, forwarding
+   `vault_access`. Let it discover and read the relevant notes. An
+   approval-pending parent handoff may resume the same batch.
+2. Collect findings with wiki path, date, and content summary.
 
 ## Output — structured contract (JSON)
 
@@ -72,8 +69,7 @@ Returns wikilink-cited findings for the research task.
 
 - Vault-only by default. Use web, codegraph, or other external evidence only when
   `allow_external: true` was explicitly authorized by the requester.
-- Every entity in scope gets the same per-entity depth as single-entity mode
-  (candidate pages from index.md + search) — batching saves setup overhead, not depth.
+- Keep the same per-entity depth as single-entity mode.
 - For a within-wiki conflict, return both dated claims in `findings[]` and add a
   gap that requester resolution is required. Never select a newer winner.
 - If topic has no record, note it internally as a gap.
@@ -82,4 +78,3 @@ Returns wikilink-cited findings for the research task.
 
 - Never one Task per entity — one track invocation batches the full scope
 - vault-query is vault-only unless `allow_external: true`
-- index.md may be incomplete — also search directly

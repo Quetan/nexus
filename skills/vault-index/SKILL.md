@@ -18,89 +18,53 @@ On missing tools or connection failure, read the bundled [local fallback](refere
 once per agent context. Inherited `local` reuses its approved root; `skip` records
 the reason and skips vault operations. Under nexus, the parent owns local consent.
 
-## What it does
-
-Maintain the wiki catalog and chronology:
-- Append entries to `log.md`, `index.md`, `projects/<project>/00_Index.md`
-- Preserve Wiki Purity in every new index entry
-
 ## Process
 
-1. **Update indexes** — MCP targets: `wiki/log.md`, `wiki/index.md`,
-   `wiki/projects/{project}/00_Index.md` (never bare `log.md` / `projects/...` at MCP root)
-2. **Classify pages** — append typed wiki-page links under the matching section
-   of `00_Index.md`; never create source queues or lifecycle markers.
-3. **Verify** — own the index/log read-back through the selected backend;
-   return verified wiki-semantic paths and failed/unverified updates to the caller.
-   Read each affected target once after its final append. Repeat only for an
-   unresolved failure or a later mutation. On uncertainty, load bundled
-   [write recovery](references/vault-access.md#write-recovery) before retrying.
+1. Route each saved page by its wiki-semantic path to the owning
+   `projects/<project>/00_Index.md` or `library/<Topic>/00_Index.md`.
+   Use the selected backend and its binding. MCP repo-bound paths start
+   with `wiki/`; wiki-bound and local paths use the wiki root directly.
+2. Read the owning index. Resolve existing targets to full paths before
+   checking for duplicates. Insert a missing link in the matching
+   section by type (such as Tasks or Задачи); create the section once if
+   missing. Move an existing Task entry into the task section if needed.
+   Preserve unrelated sections. If no index exists, create it and add
+   its navigation link to the home index for a project or to
+   `library/00_Index.md` for a library topic.
+3. Add a log entry to `log.md`. The home `index.md` holds navigation to
+   project indexes, the library, and the log. Change it only when those
+   navigation targets change.
+4. Read each changed index and the log once after the final write and
+   return verified wiki-semantic paths and failed or unverified updates.
+   On uncertainty, use the shared [write recovery](references/vault-access.md#write-recovery)
+   before retrying.
 
-### log.md entry
+### Profile index entry
+
+```markdown
+- [[projects/<p>/Tasks/<slug>|TICKET — Task title]] — Outcome or subject in one line
+```
+
+Use a full wiki-semantic target without `wiki/`, `.md`, or `../`.
+Include the ticket ID if present, and a short description supported by
+the note. Keep separate links to different notes about the same ticket.
+Archived pages, when indexed, go in a separate archive section.
+
+### Log entry
+
+Append one heading per event and include only wiki page links:
 
 ```markdown
 ## [YYYY-MM-DD] HH:MM — <command> — <description>
-  - [[full/vault/root/relative/path|Display Name]]
+  - [[full/wiki/semantic/path|Display Name]]
 ```
 
-Rules:
-- One `## [YYYY-MM-DD]` heading per time group; tab-indented (`  -`) aliased wikilinks
-- Wikilinks: full wiki-semantic paths, no `.md`, no `../`, no `wiki/` prefix
-- MCP write: `wiki/log.md`
-- Commands: `write` / `lint` / `query`
-- Link only wiki pages in `log.md`
-
-### index.md entry
-
-```markdown
-- [[projects/<p>/Entities/<entity>|<Display Name>]] — one-line summary
-- [[projects/<p>/Concepts/<concept>|<Display Name>]] — one-line summary
-- [[library/<Topic>/Concepts/<concept>|<Display Name>]] — one-line summary
-```
-
-MCP write: `wiki/index.md`
-
-### 00_Index.md
-
-Same format as `index.md`, scoped to project. Create `# <Project> Index` if
-missing. Read before append. MCP path: `wiki/projects/{project}/00_Index.md`.
-
-```markdown
-# <Project> Index
-
-## Entities
-- [[projects/<p>/Entities/foo|Foo]] — ...
-
-## Concepts
-- [[projects/<p>/Concepts/bar|Bar]] — ...
-
-## Decisions
-- [[projects/<p>/Decisions/baz-01-08-2026|Baz]] — ...
-
-## Tasks
-- [[projects/<p>/Tasks/quux-01-08-2026|Quux]] — ...
-
-## Topics
-- [[projects/<p>/Topics/quuz|Quuz]] — ...
-
-```
+Use the time of the event, and avoid adding a duplicate entry on retry.
 
 ## Input
 
-- Command, description, created/updated wiki-semantic page paths + display names,
-  project slug, and optional `vault_access` inherited from the caller
-
-## Constraints
-
-- Use the caller's backend/root for every read and append; in local mode resolve
-  wiki-semantic paths under the approved absolute wiki root.
-- Append only
-- Check duplicates before append
-- Wikilinks: wiki-semantic. MCP wiki files: `wiki/...`
-- Reject new index content containing external staging links, `Raw Sources`, or
-  ingest-status markers.
-
-## Gotchas
-
-- Read existing index before append
-- Existing legacy source-queue content is left unchanged; vault-lint reports it.
+Command (`write`, `lint`, or `query`), description, created or updated
+wiki-semantic page paths and titles, and inherited `vault_access` when
+available. Keep existing legacy source material intact. Reject new index
+entries containing external staging links, `Raw Sources`, or ingest-status
+markers.

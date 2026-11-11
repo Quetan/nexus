@@ -25,8 +25,14 @@ bundled fallback linked from this skill's `SKILL.md`.
 - Scan log.md for topics, cross-reference with projects/
 
 ### Index Drift
-- Pages not listed in vault `index.md` or project `00_Index.md`
-- Compare actual page files with index entries
+- Check that the home index links to every project index and the library
+  index, and that the library index links to every topic index.
+- Compare actual note paths with the owning project or library topic
+  index. Resolve short links and aliases before comparing. Exclude
+  archived notes and nested indexes from the leaf-page completeness check.
+- Check that each active Task is linked from the index's task section
+  and has a recognizable title, its ticket ID when present, and a brief
+  description. Report omissions and duplicate entries with their paths.
 
 ### Broken Wikilinks
 - `[[links]]` that don't resolve to existing vault files under `wiki/`

@@ -37,16 +37,18 @@ Load when needed:
 
 ## Process
 
-1. **Resolve project scope** — auto (cwd/git/manifest) or ask if ambiguous
-2. Read `wiki/index.md` through the selected backend → list candidate pages
-3. For each key term: MCP `search_notes(query, limit=10)` or approved local search
-4. For 2-5 central pages: MCP `search_notes(query="<title>", searchContent=true)`
-   or, in approved local mode, search `[[<basename>]]` under the local wiki root
-5. Adaptively read relevant notes (entities > concepts > decisions > sources)
-   - Explicit MCP paths under `wiki/`; read ≤5 pages in full; else title + first paragraph
-   - Need more depth? Record a gap and ask whether to expand budget
-6. Synthesize answer with full-path wikilink citations
-7. **File back** — durable knowledge → propose `vault-write`
+1. **Resolve scope** from the question and cwd/git/manifest. Use the home
+   index only if you need a map of the available projects or library topics.
+2. Read a known note path directly. Otherwise search the relevant subtree
+   (MCP `search_notes` with `pathPrefix`, or local filenames and content).
+   Prefer note paths and titles that match the ticket or key term. Widen
+   once if the initial search misses expected context.
+3. Read the matching notes as evidence, including Task pages. Read ≤5
+   pages in full per question; for other candidates use the title and
+   opening paragraph. Follow backlinks only when they help answer.
+4. Synthesize with full-path wikilink citations. Record coverage gaps and
+   ask before expanding the read budget.
+5. **File back** — durable knowledge → propose `vault-write`
 
 ## Output
 

@@ -82,7 +82,7 @@ mcp-mode: repo-bound (wiki/ MCP prefix).
 project: {project}; entities: [...]; topics: [...]; ticket_ids: [...]; allow_external: {true|false}
 vault_access: {mode, local_root, local_consent} (forward to vault-query)
 
-1) Read index.md  2) vault-query once for full question list  3) backlinks if needed
+Run vault-query once for the full question list. It owns note discovery and reads.
 
 Return ONLY JSON:
 {"status":"success|partial|failed","findings":[{"fact":"...","source":"wiki:<path>","date":"YYYY-MM-DD"}],"gaps":["..."]}
