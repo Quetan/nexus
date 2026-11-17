@@ -18,7 +18,7 @@ Standalone troubleshooting — not part of the nexus mandatory checklist.
 
 ## When to run
 
-- User asks to check MCP / fix vault paths
+- User asks to audit/diagnose MemPalace, check MCP, or fix vault paths
 - First MCP path read/write fails (missing path / wrong root)
 - Before `vault-write` when binding is unknown
 
@@ -40,6 +40,11 @@ Do **not** run at the start of every nexus research session.
 3. Binding probe as above
 4. Optional: `mempalace_search(query="ONB manifest", wing=<project>, room="documentation", limit=1)`; fallback git/cwd
 5. Report:
+
+When the user asks to inspect MemPalace organization, run
+`mempalace audit --json` against the configured palace and summarize its scores
+and findings. Audit is read-only. Do not run repair commands unless separately
+requested. Nexus research and routine checkpoints do not run the audit.
 
 ```
 Onboarding harness: mempalace ✓ | mcpvault ✓ | mcp-mode=repo-bound | manifest ✓

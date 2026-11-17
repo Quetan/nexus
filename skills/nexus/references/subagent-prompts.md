@@ -34,6 +34,7 @@ Load **only** when dispatching medium/full Phase 2a (not for light inline).
 ```
 wing: {project}
 entities: [...]
+question: {research question}
 repos: [...]
 rooms: [...]
 allow_external: {true|false}   # record only; MemPalace-only track
@@ -61,15 +62,23 @@ track after answering, preserving completed work from the other track.
 ### A — MemPalace
 
 ```
-MemPalace research track. Batch all entities in this one run. No code.
+MemPalace research track. Batch the full scope in this one run. No code.
 
-wing: {project}; entities: [...]; repos: [...]; rooms: [...]
+wing: {project}; question: {research question}; entities: [...]; repos: [...]; rooms: [...]
 
-For each entity: mempalace_search(limit=3) + mempalace_kg_query (max 10 relations).
-Topic searches: room searches limit=5.
+Choose the smallest fitting read: search short queries in the relevant room (limit=3
+for an entity, 5 for a topic/ticket) for source text and decisions; KG (max 10
+relations) for known relationships; diary
+(last_n=3) only for recent continuity by a known agent. Do not call search and KG for
+every entity. Search first; retry with candidate_strategy="union" for missed exact IDs,
+filenames, or ticket numbers. If results are noisy, set max_distance explicitly; no
+universal threshold is established. Verify manifest content before using it. Use the
+confirmed source date only, and an empty date when unknown. For multiple known drawer
+IDs, use mempalace_get_drawers when available. Make one extra targeted read only to
+close a plan-relevant gap; if an optional parameter fails, retry default search once.
 
 Return ONLY JSON:
-{"status":"success|partial|failed","findings":[{"fact":"...","source":"drawer:<id>","date":"YYYY-MM-DD"}],"gaps":["..."]}
+{"status":"success|partial|failed","findings":[{"fact":"...","source":"drawer:<id>","date":"YYYY-MM-DD or empty string when unknown"}],"gaps":["..."]}
 MAX 10 plan-relevant findings. Empty=success+gaps. MCP down=failed.
 ```
 
